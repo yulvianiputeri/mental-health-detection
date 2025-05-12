@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # app.py
 
 import streamlit as st
@@ -8,16 +7,17 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from mental_health_detector import AdvancedMentalHealthDetector
 import random
+import os
 
-# Page config
+# Konfigurasi halaman
 st.set_page_config(
-    page_title="Advanced Mental Health Detection System",
+    page_title="Sistem Deteksi Kesehatan Mental",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+# CSS kustom
 st.markdown("""
 <style>
     .main-header {
@@ -41,192 +41,233 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Load model
+# Memuat model
 @st.cache_resource
 def load_detector():
     detector = AdvancedMentalHealthDetector()
-    detector.load_model('mental_health_model_advanced.pkl')
-    return detector
+    
+    # Cek apakah model sudah ada
+    if not os.path.exists('mental_health_model_advanced.pkl'):
+        st.error("""
+        ❌ **Model belum tersedia!**
+        
+        🔧 **Solusi:**
+        1. Tutup aplikasi ini (Ctrl+C di terminal)
+        2. Jalankan perintah berikut di terminal:
+           ```
+           python train_model.py
+           ```
+        3. Setelah training selesai, jalankan lagi aplikasi:
+           ```
+           streamlit run app.py
+           ```
+        
+        ℹ️ **Catatan:** Training model memerlukan waktu beberapa menit.
+        """)
+        st.stop()
+    
+    try:
+        detector.load_model('mental_health_model_advanced.pkl')
+        st.success("✅ Model berhasil dimuat!")
+        return detector
+    except Exception as e:
+        st.error(f"""
+        ❌ **Error saat memuat model:**
+        ```
+        {str(e)}
+        ```
+        
+        🔧 **Solusi:**
+        1. Model mungkin corrupt. Latih ulang dengan:
+           ```
+           python train_model.py
+           ```
+        2. Pastikan semua dependencies terinstall:
+           ```
+           pip install -r requirements.txt
+           ```
+        """)
+        st.stop()
 
-# Enhanced recommendations
+# Rekomendasi yang ditingkatkan
 def get_enhanced_recommendations(condition, risk_level):
     recommendations = {
-        'depression': {
-            'high': [
-                '🚨 **URGENT**: Please contact a mental health professional immediately',
-                '📞 Crisis Hotline: 988 (Suicide & Crisis Lifeline)',
-                '🏥 Visit nearest emergency room if having suicidal thoughts',
-                '👥 Don\'t stay alone - reach out to trusted friends/family',
-                '💊 Consider medication consultation with psychiatrist'
+        'depresi': {
+            'tinggi': [
+                '🚨 **DARURAT**: Segera hubungi profesional kesehatan mental',
+                '📞 Hotline Krisis: 119 ext 8 (Sejiwa)',
+                '🏥 Kunjungi UGD terdekat jika ada pikiran menyakiti diri',
+                '👥 Jangan sendirian - hubungi teman/keluarga terpercaya',
+                '💊 Pertimbangkan konsultasi obat dengan psikiater'
             ],
-            'medium': [
-                '🩺 Schedule appointment with therapist/counselor',
-                '🏃‍♀️ Start regular exercise routine (even 10 min walks)',
-                '😴 Prioritize sleep hygiene (7-9 hours)',
-                '📱 Use mental health apps (Headspace, Calm)',
-                '📓 Start journaling to track mood patterns'
+            'sedang': [
+                '🩺 Jadwalkan pertemuan dengan psikolog/psikiater',
+                '🏃‍♀️ Mulai rutinitas olahraga ringan (jalan 10 menit)',
+                '😴 Prioritaskan kebersihan tidur (7-9 jam)',
+                '📱 Gunakan aplikasi kesehatan mental (Headspace, Riliv)',
+                '📓 Mulai journaling untuk memonitor mood'
             ],
-            'low': [
-                '🌱 Practice self-care activities',
-                '☀️ Get sunlight exposure daily',
-                '🥗 Maintain healthy diet',
-                '🧘‍♀️ Try meditation or yoga',
-                '🎨 Engage in creative activities'
+            'rendah': [
+                '🌱 Lakukan aktivitas self-care',
+                '☀️ Berjemur di bawah sinar matahari setiap hari',
+                '🥗 Makan makanan bergizi',
+                '🧘‍♀️ Coba meditasi atau yoga',
+                '🎨 Ikut aktivitas kreatif'
             ]
         },
-        'anxiety': {
-            'high': [
-                '🚨 Seek immediate professional help',
-                '🫁 Practice emergency breathing techniques',
-                '💊 Discuss anti-anxiety medication with doctor',
-                '🚫 Avoid caffeine and stimulants',
-                '📱 Download panic attack apps'
+        'kecemasan': {
+            'tinggi': [
+                '🚨 Cari bantuan profesional segera',
+                '🫁 Latih teknik pernapasan darurat',
+                '💊 Diskusikan obat anti-cemas dengan dokter',
+                '🚫 Hindari kafein dan stimulan',
+                '📱 Download aplikasi bantuan serangan panik'
             ],
-            'medium': [
-                '🧘‍♂️ Learn relaxation techniques',
-                '📝 Keep anxiety diary',
-                '🏃‍♂️ Regular aerobic exercise',
-                '🎯 Challenge negative thoughts',
-                '👥 Join anxiety support groups'
+            'sedang': [
+                '🧘‍♂️ Pelajari teknik relaksasi',
+                '📝 Buat jurnal kecemasan',
+                '🏃‍♂️ Olahraga aerobik teratur',
+                '🎯 Lawan pikiran negatif',
+                '👥 Bergabung dengan grup support kecemasan'
             ],
-            'low': [
-                '☕ Limit caffeine intake',
-                '📅 Maintain routine',
-                '🌿 Try herbal teas',
-                '🎵 Listen to calming music',
-                '📚 Read self-help books'
+            'rendah': [
+                '☕ Batasi asupan kafein',
+                '📅 Pertahankan rutinitas',
+                '🌿 Coba teh herbal',
+                '🎵 Dengar musik yang menenangkan',
+                '📚 Baca buku self-help'
             ]
         },
         'stress': {
-            'high': [
-                '🚨 Take immediate stress leave if possible',
-                '🩺 Consult doctor about stress symptoms',
-                '🧘‍♀️ Daily stress-reduction practices mandatory',
-                '❌ Learn to say NO to additional responsibilities',
-                '💤 Prioritize rest and recovery'
+            'tinggi': [
+                '🚨 Ambil cuti stress jika memungkinkan',
+                '🩺 Konsultasi dokter tentang gejala stress',
+                '🧘‍♀️ Wajib lakukan latihan mengurangi stress harian',
+                '❌ Belajar mengatakan TIDAK untuk tanggung jawab tambahan',
+                '💤 Prioritaskan istirahat dan pemulihan'
             ],
-            'medium': [
-                '⏰ Implement time management strategies',
-                '🎯 Set realistic goals and boundaries',
-                '🏖️ Plan regular breaks and vacations',
-                '💪 Delegate tasks when possible',
-                '🧘‍♂️ Practice mindfulness meditation'
+            'sedang': [
+                '⏰ Terapkan strategi manajemen waktu',
+                '🎯 Tetapkan tujuan dan batasan yang realistis',
+                '🏖️ Rencanakan istirahat dan liburan rutin',
+                '💪 Delegasikan tugas jika memungkinkan',
+                '🧘‍♂️ Praktikkan meditasi mindfulness'
             ],
-            'low': [
-                '📱 Use productivity apps',
-                '🎨 Engage in hobbies',
-                '🌳 Spend time in nature',
-                '👥 Maintain social connections',
-                '🏃‍♀️ Regular physical activity'
+            'rendah': [
+                '📱 Gunakan aplikasi produktivitas',
+                '🎨 Lakukan hobi',
+                '🌳 Habiskan waktu di alam',
+                '👥 Jaga koneksi sosial',
+                '🏃‍♀️ Aktivitas fisik teratur'
             ]
         },
         'normal': {
-            'low': [
-                '✅ Continue current healthy habits',
-                '📊 Regular mental health check-ins',
-                '💪 Build resilience skills',
-                '🎯 Set personal growth goals',
-                '🤝 Help others in need'
+            'rendah': [
+                '✅ Lanjutkan kebiasaan sehat saat ini',
+                '📊 Check-in kesehatan mental rutin',
+                '💪 Bangun kemampuan resiliensi',
+                '🎯 Tetapkan tujuan pertumbuhan pribadi',
+                '🤝 Bantu orang lain yang membutuhkan'
             ]
         }
     }
     
     return recommendations.get(condition, {}).get(risk_level.lower(), [])
 
-# Main app
+# Aplikasi utama
 def main():
     # Header
-    st.markdown('<h1 class="main-header">🧠 Advanced Mental Health Detection System</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🧠 Sistem Deteksi Kesehatan Mental Lanjutan</h1>', unsafe_allow_html=True)
     
-    # Initialize session state
+    # Inisialisasi session state
     if 'history' not in st.session_state:
         st.session_state.history = []
     
     # Sidebar
     with st.sidebar:
-        st.header("🎛️ Control Panel")
+        st.header("🎛️ Panel Kontrol")
         
-        # User profile (mock)
-        st.subheader("👤 User Profile")
-        user_name = st.text_input("Name", "Anonymous")
-        user_age = st.number_input("Age", 18, 100, 25)
+        # Profil pengguna (demo)
+        st.subheader("👤 Profil Pengguna")
+        user_name = st.text_input("Nama", "Anonim")
+        user_age = st.number_input("Umur", 18, 100, 25)
         
         st.markdown("---")
         
-        # Quick actions
-        st.subheader("⚡ Quick Actions")
-        if st.button("📊 View Analytics", use_container_width=True):
+        # Aksi cepat
+        st.subheader("⚡ Aksi Cepat")
+        if st.button("📊 Lihat Analitik", use_container_width=True):
             st.session_state.show_analytics = True
-        if st.button("📝 Export Report", use_container_width=True):
+        if st.button("📝 Ekspor Laporan", use_container_width=True):
             st.session_state.export_report = True
-        if st.button("🆘 Crisis Resources", use_container_width=True):
+        if st.button("🆘 Sumber Bantuan Krisis", use_container_width=True):
             st.session_state.show_crisis = True
             
         st.markdown("---")
         
         # Info
         st.info(
-            "This AI system uses advanced NLP and machine learning to detect mental health patterns. "
-            "It analyzes text sentiment, keywords, and linguistic patterns to provide insights."
+            "Sistem AI ini menggunakan NLP dan machine learning canggih untuk mendeteksi pola kesehatan mental. "
+            "Menganalisis sentimen teks, kata kunci, dan pola linguistik untuk memberikan wawasan."
         )
         
         st.warning(
-            "⚠️ This is NOT a replacement for professional mental health diagnosis. "
-            "Please consult healthcare providers for medical advice."
+            "⚠️ Ini BUKAN pengganti diagnosis profesional kesehatan mental. "
+            "Silakan konsultasi dengan penyedia layanan kesehatan untuk saran medis."
         )
     
-    # Main content area
-    tabs = st.tabs(["🔍 Analysis", "📊 Dashboard", "📈 History", "💡 Resources"])
+    # Area konten utama
+    tabs = st.tabs(["🔍 Analisis", "📊 Dashboard", "📈 Riwayat"])
     
-    # Analysis Tab
+    # Tab Analisis
     with tabs[0]:
         col1, col2 = st.columns([3, 2])
         
         with col1:
-            st.header("💬 Text Analysis")
+            st.header("💬 Analisis Teks")
             
-            # Input method selection
+            # Pilihan metode input
             input_method = st.radio(
-                "Choose input method:",
-                ["Single Message", "Chat History", "Voice Note (Beta)"],
+                "Pilih metode input:",
+                ["Pesan Tunggal", "Riwayat Chat", "Catatan Suara (Beta)"],
                 horizontal=True
             )
             
-            if input_method == "Single Message":
+            if input_method == "Pesan Tunggal":
                 user_input = st.text_area(
-                    "Share your thoughts and feelings:",
+                    "Bagikan pikiran dan perasaan Anda:",
                     height=150,
-                    placeholder="I'm feeling... (You can use emojis too! 😊😔)"
+                    placeholder="Saya merasa... (Anda bisa pakai emoji juga! 😊😔)"
                 )
                 
                 col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
                 with col_btn1:
-                    analyze_btn = st.button("🔍 Analyze", type="primary", use_container_width=True)
+                    analyze_btn = st.button("🔍 Analisis", type="primary", use_container_width=True)
                 with col_btn2:
-                    clear_btn = st.button("🗑️ Clear", use_container_width=True)
+                    clear_btn = st.button("🗑️ Hapus", use_container_width=True)
                 
                 if analyze_btn and user_input:
-                    with st.spinner("🧠 AI analyzing your text..."):
-                        # Load model
+                    with st.spinner("🧠 AI sedang menganalisis teks Anda..."):
+                        # Memuat model
                         detector = load_detector()
                         
-                        # Get prediction
+                        # Dapatkan prediksi
                         result = detector.predict(user_input)
                         
-                        # Add to history
+                        # Tambah ke riwayat
                         st.session_state.history.append({
                             'timestamp': datetime.now(),
                             'text': user_input,
                             'result': result
                         })
                         
-                        # Display results
-                        st.success("✅ Analysis complete!")
+                        # Tampilkan hasil
+                        st.success("✅ Analisis selesai!")
                         
-                        # Condition card
+                        # Kartu kondisi
                         condition_colors = {
-                            'depression': '#ff4444',
-                            'anxiety': '#ff8800',
+                            'depresi': '#ff4444',
+                            'kecemasan': '#ff8800',
                             'stress': '#ffbb33',
                             'normal': '#00C851'
                         }
@@ -234,102 +275,102 @@ def main():
                         st.markdown(f"""
                         <div style="background-color: {condition_colors.get(result['condition'], '#gray')}; 
                                     color: white; padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                            <h2 style="margin: 0;">Detected Condition: {result['condition'].upper()}</h2>
+                            <h2 style="margin: 0;">Kondisi Terdeteksi: {result['condition'].upper()}</h2>
                             <p style="margin: 0.5rem 0;">Confidence: {result['confidence']:.1%}</p>
                         </div>
                         """, unsafe_allow_html=True)
                         
-                        # Risk level
+                        # Level risiko
                         risk_class = f"risk-{result['risk_level'].lower()}"
-                        st.markdown(f"<p class='{risk_class}'>Risk Level: {result['risk_level']}</p>", 
+                        st.markdown(f"<p class='{risk_class}'>Level Risiko: {result['risk_level']}</p>", 
                                    unsafe_allow_html=True)
                         
-                        # Detailed metrics
-                        st.subheader("📊 Detailed Analysis")
+                        # Metrik detail
+                        st.subheader("📊 Analisis Detail")
                         met_col1, met_col2, met_col3 = st.columns(3)
                         
                         with met_col1:
-                            st.metric("Sentiment Score", f"{result['sentiment']['compound']:.3f}")
+                            st.metric("Skor Sentimen", f"{result['sentiment']['compound']:.3f}")
                         with met_col2:
-                            st.metric("Confidence Margin", f"{result['confidence_margin']:.2%}")
+                            st.metric("Margin Confidence", f"{result['confidence_margin']:.2%}")
                         with met_col3:
-                            st.metric("Word Count", len(user_input.split()))
+                            st.metric("Jumlah Kata", len(user_input.split()))
                         
-                        # Probability distribution
-                        st.subheader("🎯 Condition Probabilities")
+                        # Distribusi probabilitas
+                        st.subheader("🎯 Probabilitas Kondisi")
                         prob_df = pd.DataFrame(list(result['probabilities'].items()), 
-                                              columns=['Condition', 'Probability'])
-                        fig = px.bar(prob_df, x='Condition', y='Probability', 
-                                    color='Condition', 
+                                              columns=['Kondisi', 'Probabilitas'])
+                        fig = px.bar(prob_df, x='Kondisi', y='Probabilitas', 
+                                    color='Kondisi', 
                                     color_discrete_map=condition_colors,
-                                    title="AI Confidence Distribution")
+                                    title="Distribusi Keyakinan AI")
                         st.plotly_chart(fig, use_container_width=True)
                 
                 if clear_btn:
                     st.session_state.clear()
                     st.rerun()
             
-            elif input_method == "Chat History":
-                st.write("📱 Paste your chat history (one message per line):")
+            elif input_method == "Riwayat Chat":
+                st.write("📱 Tempel riwayat chat Anda (satu pesan per baris):")
                 chat_input = st.text_area(
-                    "Chat messages:",
+                    "Pesan chat:",
                     height=200,
-                    placeholder="Message 1\nMessage 2\nMessage 3\n..."
+                    placeholder="Pesan 1\nPesan 2\nPesan 3\n..."
                 )
                 
-                if st.button("📊 Analyze History", type="primary"):
+                if st.button("📊 Analisis Riwayat", type="primary"):
                     if chat_input:
                         messages = [msg.strip() for msg in chat_input.split('\n') if msg.strip()]
                         
-                        with st.spinner("🔄 Analyzing chat history..."):
+                        with st.spinner("🔄 Menganalisis riwayat chat..."):
                             detector = load_detector()
                             
-                            # Create synthetic timestamps
+                            # Buat timestamp sintetis
                             timestamps = [datetime.now() - timedelta(hours=i) for i in range(len(messages))]
                             
                             results = detector.analyze_chat_history(messages, timestamps)
                             
-                            st.success("✅ Chat history analysis complete!")
+                            st.success("✅ Analisis riwayat chat selesai!")
                             
-                            # Summary metrics
+                            # Metrik ringkasan
                             summary = results['summary']
-                            st.subheader("📈 Summary Statistics")
+                            st.subheader("📈 Statistik Ringkasan")
                             
                             sum_col1, sum_col2, sum_col3, sum_col4 = st.columns(4)
                             with sum_col1:
-                                st.metric("Total Messages", summary['total_messages'])
+                                st.metric("Total Pesan", summary['total_messages'])
                             with sum_col2:
-                                st.metric("Dominant Condition", summary['dominant_condition'].upper())
+                                st.metric("Kondisi Dominan", summary['dominant_condition'].upper())
                             with sum_col3:
-                                st.metric("High Risk Messages", summary['high_risk_messages'])
+                                st.metric("Pesan Risiko Tinggi", summary['high_risk_messages'])
                             with sum_col4:
-                                st.metric("Avg Confidence", f"{summary['average_confidence']:.1%}")
+                                st.metric("Rerata Confidence", f"{summary['average_confidence']:.1%}")
                             
-                            # Condition distribution pie chart
+                            # Diagram pie distribusi kondisi
                             dist_df = pd.DataFrame(list(summary['condition_distribution'].items()),
-                                                  columns=['Condition', 'Count'])
-                            fig_pie = px.pie(dist_df, values='Count', names='Condition',
-                                           title="Condition Distribution in Chat History")
+                                                  columns=['Kondisi', 'Jumlah'])
+                            fig_pie = px.pie(dist_df, values='Jumlah', names='Kondisi',
+                                           title="Distribusi Kondisi dalam Riwayat Chat")
                             st.plotly_chart(fig_pie, use_container_width=True)
                             
-                            # Individual message analysis
-                            st.subheader("🔍 Individual Message Analysis")
+                            # Analisis pesan individual
+                            st.subheader("🔍 Analisis Pesan Individual")
                             for idx, result in enumerate(results['individual_results']):
-                                with st.expander(f"Message {idx+1}: {result['message_preview']}"):
+                                with st.expander(f"Pesan {idx+1}: {result['message_preview']}"):
                                     col1, col2, col3 = st.columns(3)
                                     with col1:
-                                        st.write(f"**Condition:** {result['condition']}")
+                                        st.write(f"**Kondisi:** {result['condition']}")
                                     with col2:
                                         st.write(f"**Confidence:** {result['confidence']:.1%}")
                                     with col3:
-                                        st.write(f"**Risk:** {result['risk_level']}")
+                                        st.write(f"**Risiko:** {result['risk_level']}")
             
-            else:  # Voice Note
-                st.info("🎤 Voice analysis coming soon! This feature will allow you to speak your thoughts.")
-                st.write("For now, please use text input.")
+            else:  # Catatan Suara
+                st.info("🎤 Analisis suara segera hadir! Fitur ini akan memungkinkan Anda berbicara pikiran Anda.")
+                st.write("Saat ini, silakan gunakan input teks.")
         
         with col2:
-            st.header("💡 Recommendations")
+            st.header("💡 Rekomendasi")
             
             if 'history' in st.session_state and st.session_state.history:
                 latest = st.session_state.history[-1]
@@ -338,57 +379,57 @@ def main():
                 
                 recommendations = get_enhanced_recommendations(condition, risk_level)
                 
-                # Risk-based styling
+                # Styling berdasarkan risiko
                 if risk_level == "High":
-                    st.error("⚠️ HIGH RISK DETECTED - Immediate Action Recommended")
+                    st.error("⚠️ RISIKO TINGGI TERDETEKSI - Tindakan Segera Disarankan")
                 elif risk_level == "Medium":
-                    st.warning("⚠️ Moderate Risk - Professional Support Advised")
+                    st.warning("⚠️ Risiko Sedang - Bantuan Profesional Disarankan")
                 else:
-                    st.info("ℹ️ Low Risk - Preventive Measures Recommended")
+                    st.info("ℹ️ Risiko Rendah - Tindakan Pencegahan Disarankan")
                 
-                # Display recommendations
+                # Tampilkan rekomendasi
                 for i, rec in enumerate(recommendations, 1):
                     st.write(f"{i}. {rec}")
                 
-                # Emergency resources
+                # Sumber daya darurat
                 if risk_level in ["High", "Medium"]:
                     st.markdown("---")
-                    st.subheader("🆘 Emergency Resources")
+                    st.subheader("🆘 Sumber Daya Darurat")
                     st.error("""
-                    **Crisis Hotlines:**
-                    - 988 Suicide & Crisis Lifeline
-                    - Crisis Text Line: Text HOME to 741741
-                    - Emergency: 911
+                    **Hotline Krisis:**
+                    - 119 ext 8 (Sejiwa) - Hotline Bunuh Diri & Krisis
+                    - 500-454 (Halodoc) - Konsultasi Psikolog
+                    - Darurat: 112/119
                     """)
                     
-                    with st.expander("Find Local Resources"):
-                        st.write("🏥 [Find Mental Health Services Near You](https://findtreatment.samhsa.gov/)")
-                        st.write("👥 [Support Groups](https://www.nami.org/support-education)")
-                        st.write("📱 [Mental Health Apps](https://www.psychiatry.org/patients-families/mental-health-apps)")
+                    with st.expander("Cari Sumber Daya Lokal"):
+                        st.write("🏥 [Direktori Psikolog & Psikiater](https://www.halodoc.com/psikolog)")
+                        st.write("👥 [Grup Support](https://pijarpsikologi.org/)")
+                        st.write("📱 [Aplikasi Kesehatan Mental](https://www.riliv.co/)")
             else:
-                st.info("👈 Enter text and click analyze to get personalized recommendations")
+                st.info("👈 Masukkan teks dan klik analisis untuk mendapat rekomendasi yang dipersonalisasi")
                 
-                # General tips
-                st.subheader("🌟 General Mental Health Tips")
+                # Tips umum
+                st.subheader("🌟 Tips Kesehatan Mental Umum")
                 tips = [
-                    "🧘‍♀️ Practice mindfulness daily",
-                    "🏃‍♂️ Regular exercise boosts mood",
-                    "😴 Prioritize quality sleep",
-                    "🥗 Maintain balanced nutrition",
-                    "👥 Stay socially connected",
-                    "📝 Keep a mood journal",
-                    "🎯 Set realistic goals",
-                    "🌳 Spend time in nature"
+                    "🧘‍♀️ Lakukan mindfulness setiap hari",
+                    "🏃‍♂️ Olahraga teratur meningkatkan mood",
+                    "😴 Prioritaskan kualitas tidur",
+                    "🥗 Jaga nutrisi seimbang",
+                    "👥 Tetap terhubung secara sosial",
+                    "📝 Buat jurnal mood",
+                    "🎯 Tetapkan tujuan yang realistis",
+                    "🌳 Habiskan waktu di alam"
                 ]
                 for tip in tips:
                     st.write(tip)
     
-    # Dashboard Tab
+    # Tab Dashboard
     with tabs[1]:
-        st.header("📊 Mental Health Dashboard")
+        st.header("📊 Dashboard Kesehatan Mental")
         
         if st.session_state.history:
-            # Convert history to DataFrame
+            # Konversi riwayat ke DataFrame
             history_df = pd.DataFrame([
                 {
                     'timestamp': h['timestamp'],
@@ -400,13 +441,13 @@ def main():
                 for h in st.session_state.history
             ])
             
-            # Time series plot
+            # Grafik time series
             fig_time = go.Figure()
             
             conditions = history_df['condition'].unique()
             condition_colors = {
-                'depression': '#ff4444',
-                'anxiety': '#ff8800',
+                'depresi': '#ff4444',
+                'kecemasan': '#ff8800',
                 'stress': '#ffbb33',
                 'normal': '#00C851'
             }
@@ -423,73 +464,73 @@ def main():
                 ))
             
             fig_time.update_layout(
-                title="Mental Health Trends Over Time",
-                xaxis_title="Time",
-                yaxis_title="Confidence Score",
+                title="Tren Kesehatan Mental Sepanjang Waktu",
+                xaxis_title="Waktu",
+                yaxis_title="Skor Confidence",
                 hovermode='x unified'
             )
             
             st.plotly_chart(fig_time, use_container_width=True)
             
-            # Summary statistics
+            # Statistik ringkasan
             col1, col2 = st.columns(2)
             
             with col1:
-                # Condition frequency
+                # Frekuensi kondisi
                 condition_counts = history_df['condition'].value_counts()
                 fig_freq = px.bar(x=condition_counts.index, y=condition_counts.values,
-                                 labels={'x': 'Condition', 'y': 'Frequency'},
-                                 title="Condition Frequency",
+                                 labels={'x': 'Kondisi', 'y': 'Frekuensi'},
+                                 title="Frekuensi Kondisi",
                                  color=condition_counts.index,
                                  color_discrete_map=condition_colors)
                 st.plotly_chart(fig_freq, use_container_width=True)
             
             with col2:
-                # Risk level distribution
+                # Distribusi level risiko
                 risk_counts = history_df['risk_level'].value_counts()
                 fig_risk = px.pie(values=risk_counts.values, names=risk_counts.index,
-                                 title="Risk Level Distribution",
+                                 title="Distribusi Level Risiko",
                                  color_discrete_map={'High': '#ff4444', 
                                                     'Medium': '#ff8800',
                                                     'Low': '#00C851'})
                 st.plotly_chart(fig_risk, use_container_width=True)
             
-            # Sentiment trends
-            st.subheader("😊 Sentiment Analysis")
+            # Tren sentimen
+            st.subheader("😊 Analisis Sentimen")
             fig_sentiment = go.Figure()
             fig_sentiment.add_trace(go.Scatter(
                 x=history_df['timestamp'],
                 y=history_df['sentiment'],
                 mode='lines+markers',
-                name='Sentiment Score',
+                name='Skor Sentimen',
                 line=dict(color='purple', width=3),
                 marker=dict(size=8)
             ))
             
             fig_sentiment.update_layout(
-                title="Sentiment Trends",
-                xaxis_title="Time",
-                yaxis_title="Sentiment Score (-1 to 1)",
+                title="Tren Sentimen",
+                xaxis_title="Waktu",
+                yaxis_title="Skor Sentimen (-1 sampai 1)",
                 hovermode='x unified'
             )
             
             st.plotly_chart(fig_sentiment, use_container_width=True)
             
-            # Recent activity table
-            st.subheader("📋 Recent Activity")
+            # Tabel aktivitas terkini
+            st.subheader("📋 Aktivitas Terkini")
             recent_df = history_df.tail(5)[['timestamp', 'condition', 'confidence', 'risk_level']]
             recent_df['timestamp'] = recent_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M')
             st.dataframe(recent_df, use_container_width=True)
         else:
-            st.info("📊 No data yet. Start by analyzing some text in the Analysis tab!")
+            st.info("📊 Belum ada data. Mulai dengan menganalisis teks di tab Analisis!")
     
-    # History Tab
+    # Tab Riwayat
     with tabs[2]:
-        st.header("📈 Analysis History")
+        st.header("📈 Riwayat Analisis")
         
         if st.session_state.history:
-            # Export button
-            if st.button("📥 Export History as CSV"):
+            # Tombol ekspor
+            if st.button("📥 Ekspor Riwayat sebagai CSV"):
                 history_df = pd.DataFrame([
                     {
                         'timestamp': h['timestamp'],
@@ -503,39 +544,39 @@ def main():
                 
                 csv = history_df.to_csv(index=False)
                 st.download_button(
-                    label="Download CSV",
+                    label="Unduh CSV",
                     data=csv,
-                    file_name=f"mental_health_history_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                    file_name=f"riwayat_kesehatan_mental_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
                     mime="text/csv"
                 )
             
-            # Clear history button
-            if st.button("🗑️ Clear History", type="secondary"):
+            # Tombol hapus riwayat
+            if st.button("🗑️ Hapus Riwayat", type="secondary"):
                 st.session_state.history = []
                 st.rerun()
             
-            # Display history
+            # Tampilkan riwayat
             for idx, entry in enumerate(reversed(st.session_state.history)):
-                with st.expander(f"Analysis {len(st.session_state.history) - idx} - {entry['timestamp'].strftime('%Y-%m-%d %H:%M')}"):
+                with st.expander(f"Analisis {len(st.session_state.history) - idx} - {entry['timestamp'].strftime('%Y-%m-%d %H:%M')}"):
                     col1, col2 = st.columns([3, 1])
                     
                     with col1:
-                        st.write("**Text:**")
+                        st.write("**Teks:**")
                         st.write(entry['text'])
                         
-                        st.write("**Results:**")
-                        st.write(f"Condition: {entry['result']['condition'].upper()}")
+                        st.write("**Hasil:**")
+                        st.write(f"Kondisi: {entry['result']['condition'].upper()}")
                         st.write(f"Confidence: {entry['result']['confidence']:.1%}")
-                        st.write(f"Risk Level: {entry['result']['risk_level']}")
+                        st.write(f"Level Risiko: {entry['result']['risk_level']}")
                     
                     with col2:
-                        # Sentiment gauge
+                        # Gauge sentimen
                         sentiment_score = entry['result']['sentiment']['compound']
                         fig_gauge = go.Figure(go.Indicator(
                             mode="gauge+number",
                             value=sentiment_score,
                             domain={'x': [0, 1], 'y': [0, 1]},
-                            title={'text': "Sentiment"},
+                            title={'text': "Sentimen"},
                             gauge={'axis': {'range': [-1, 1]},
                                   'bar': {'color': "purple"},
                                   'steps': [
@@ -548,257 +589,8 @@ def main():
                         fig_gauge.update_layout(height=200)
                         st.plotly_chart(fig_gauge, use_container_width=True)
         else:
-            st.info("📝 No history yet. Start analyzing text to build your history!")
+            st.info("📝 Belum ada riwayat. Mulai menganalisis teks untuk membangun riwayat Anda!")
     
-    # Resources Tab
-    with tabs[3]:
-        st.header("💡 Mental Health Resources")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("📚 Educational Resources")
-            resources = {
-                "Understanding Depression": "https://www.nimh.nih.gov/health/topics/depression",
-                "Anxiety Disorders": "https://www.nimh.nih.gov/health/topics/anxiety-disorders",
-                "Stress Management": "https://www.apa.org/topics/stress",
-                "Mental Health Basics": "https://www.mentalhealth.gov/basics"
-            }
-            
-            for title, link in resources.items():
-                st.markdown(f"📖 [{title}]({link})")
-            
-            st.subheader("🎧 Recommended Apps")
-            apps = {
-                "Headspace": "Meditation and mindfulness",
-                "Calm": "Sleep and relaxation",
-                "Sanvello": "Anxiety management",
-                "Youper": "Emotional health assistant",
-                "Talkspace": "Online therapy platform"
-            }
-            
-            for app, desc in apps.items():
-                st.write(f"📱 **{app}**: {desc}")
-        
-        with col2:
-            st.subheader("🏥 Professional Help")
-            st.write("""
-            **When to Seek Professional Help:**
-            - Symptoms persist for more than 2 weeks
-            - Difficulty functioning in daily life
-            - Thoughts of self-harm or suicide
-            - Substance abuse concerns
-            - Relationship problems
-            
-            **Types of Mental Health Professionals:**
-            - **Psychiatrists**: Medical doctors who can prescribe medication
-            - **Psychologists**: Therapy and counseling experts
-            - **Counselors**: Support for specific issues
-            - **Social Workers**: Community resources and support
-            """)
-            
-            st.subheader("📞 Hotlines & Crisis Support")
-            st.error("""
-            **Emergency Contacts:**
-            - 🆘 Emergency: 911
-            - 📞 988 Suicide & Crisis Lifeline
-            - 💬 Crisis Text Line: Text HOME to 741741
-            - 🏥 SAMHSA National Helpline: 1-800-662-4357
-            """)
-    
-    # Show crisis resources modal if triggered
-    if 'show_crisis' in st.session_state and st.session_state.show_crisis:
-        with st.expander("🆘 Crisis Resources", expanded=True):
-            st.error("""
-            **If you're in immediate danger, please call 911**
-            
-            **Crisis Support:**
-            - 988 Suicide & Crisis Lifeline (24/7)
-            - Crisis Text Line: Text HOME to 741741
-            - Veterans Crisis Line: 1-800-273-8255
-            - LGBTQ National Hotline: 1-888-843-4564
-            - National Eating Disorders Hotline: 1-800-931-2237
-            """)
-            if st.button("Close"):
-                st.session_state.show_crisis = False
-                st.rerun()
 
 if __name__ == "__main__":
     main()
-=======
-# app.py
-
-import streamlit as st
-import pandas as pd
-from mental_health_detector import MentalHealthDetector
-
-# Page config
-st.set_page_config(
-    page_title="Deteksi Kesehatan Mental",
-    page_icon="🧠",
-    layout="wide"
-)
-
-# Load model
-@st.cache_resource
-def load_detector():
-    detector = MentalHealthDetector()
-    detector.load_model('mental_health_model.pkl')
-    return detector
-
-# Rekomendasi berdasarkan kondisi
-def get_recommendations(condition):
-    recommendations = {
-        'depresi': [
-            '🏥 Konsultasi dengan psikolog atau psikiater',
-            '🚶‍♀️ Lakukan aktivitas fisik ringan setiap hari',
-            '💬 Berbagi cerita dengan orang terpercaya',
-            '😴 Jaga pola tidur yang teratur',
-            '🧘‍♀️ Coba meditasi atau mindfulness'
-        ],
-        'kecemasan': [
-            '🫁 Latihan pernapasan dalam',
-            '🧘‍♂️ Praktikkan yoga atau meditasi',
-            '☕ Kurangi konsumsi kafein',
-            '📝 Tulis jurnal untuk mengidentifikasi pemicu',
-            '🎯 Fokus pada hal-hal yang bisa dikontrol'
-        ],
-        'stress': [
-            '⏸️ Ambil istirahat secara teratur',
-            '🎯 Prioritaskan tugas-tugas penting',
-            '🤝 Minta bantuan jika diperlukan',
-            '🎨 Lakukan hobi yang menyenangkan',
-            '🏃‍♂️ Olahraga untuk melepas ketegangan'
-        ],
-        'normal': [
-            '✅ Pertahankan pola hidup sehat',
-            '💪 Terus kembangkan diri',
-            '👥 Jaga hubungan sosial yang positif',
-            '🎉 Rayakan pencapaian kecil',
-            '🙏 Praktikkan rasa syukur'
-        ]
-    }
-    return recommendations.get(condition, [])
-
-# Main app
-st.title("🧠 Sistem Deteksi Kesehatan Mental")
-st.markdown("---")
-
-# Sidebar
-st.sidebar.header("📋 Informasi")
-st.sidebar.info(
-    "Aplikasi ini menggunakan AI untuk mendeteksi kondisi kesehatan mental "
-    "berdasarkan teks yang Anda masukkan. "
-    "\n\n⚠️ **Penting**: Ini hanya alat screening, bukan diagnosis medis!"
-)
-
-# Main content
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.header("💬 Masukkan Teks")
-    
-    user_input = st.text_area(
-        "Ceritakan perasaan atau kondisi Anda:",
-        height=150,
-        placeholder="Contoh: Hari ini saya merasa..."
-    )
-    
-    if st.button("🔍 Analisis", type="primary"):
-        if user_input:
-            with st.spinner("Menganalisis..."):
-                # Load model
-                detector = load_detector()
-                
-                # Predict
-                result = detector.predict(user_input)
-                
-                # Show results
-                st.success("Analisis selesai!")
-                
-                # Condition
-                condition = result['condition']
-                confidence = result['confidence']
-                
-                # Display with color
-                colors = {
-                    'depresi': 'red',
-                    'kecemasan': 'orange',
-                    'stress': 'blue',
-                    'normal': 'green'
-                }
-                
-                st.markdown(f"### Kondisi: :{colors.get(condition, 'gray')}[{condition.upper()}]")
-                st.progress(confidence, text=f"Confidence: {confidence:.1%}")
-                
-                # Scores detail
-                st.subheader("📊 Skor Detail")
-                scores_df = pd.DataFrame([result['all_scores']])
-                st.bar_chart(scores_df.T)
-                
-                # Recommendations
-                st.subheader("💡 Rekomendasi")
-                recommendations = get_recommendations(condition)
-                for rec in recommendations:
-                    st.write(rec)
-        else:
-            st.error("Silakan masukkan teks terlebih dahulu!")
-
-with col2:
-    st.header("ℹ️ Tentang Kondisi")
-    
-    with st.expander("🔴 Depresi"):
-        st.write("""
-        **Ciri-ciri:**
-        - Perasaan sedih yang mendalam
-        - Kehilangan minat/motivasi
-        - Merasa tidak berharga
-        - Kelelahan ekstrem
-        
-        **Kapan harus ke profesional:**
-        Jika gejala berlangsung > 2 minggu
-        """)
-    
-    with st.expander("🟠 Kecemasan"):
-        st.write("""
-        **Ciri-ciri:**
-        - Kekhawatiran berlebihan
-        - Sulit konsentrasi
-        - Gangguan tidur
-        - Gejala fisik (jantung berdebar, keringat)
-        
-        **Kapan harus ke profesional:**
-        Jika mengganggu aktivitas harian
-        """)
-    
-    with st.expander("🔵 Stress"):
-        st.write("""
-        **Ciri-ciri:**
-        - Merasa tertekan/overwhelmed
-        - Mudah marah/frustasi
-        - Sakit kepala/otot tegang
-        - Perubahan pola makan/tidur
-        
-        **Kapan harus ke profesional:**
-        Jika tidak bisa mengatasi sendiri
-        """)
-    
-    with st.expander("🟢 Normal"):
-        st.write("""
-        **Ciri-ciri:**
-        - Mood stabil
-        - Mampu mengatasi stress
-        - Tidur nyenyak
-        - Energi cukup
-        
-        **Tips maintenance:**
-        Jaga pola hidup sehat!
-        """)
-
-# Footer
-st.markdown("---")
-st.markdown(
-    "💡 **Disclaimer**: Aplikasi ini bukan pengganti konsultasi profesional. "
-    "Jika Anda mengalami masalah kesehatan mental serius, segera hubungi psikolog/psikiater."
-)
->>>>>>> f3c40336716a08457841395e7c1bc23442cc614c

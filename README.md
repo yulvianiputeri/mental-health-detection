@@ -1,47 +1,45 @@
-# mental-health-detection
+# 🧠 Sistem Deteksi Kesehatan Mental Lanjutan
 
-# 🧠 Advanced Mental Health Detection System
+Sistem canggih berbasis AI yang menganalisis teks untuk mendeteksi kondisi kesehatan mental menggunakan Natural Language Processing dan Machine Learning.
 
-A sophisticated AI-powered system that analyzes text to detect mental health conditions using Natural Language Processing and Machine Learning.
+## ✨ Fitur
 
-## ✨ Features
+### 🔍 Kemampuan Deteksi Lanjutan
+- **Deteksi Multi-kondisi**: Depresi, Kecemasan, Stress, dan kondisi Normal
+- **Analisis Sentimen**: Penilaian nada emosional secara real-time
+- **Penilaian Level Risiko**: Kategorisasi risiko Tinggi, Sedang, Rendah
+- **Skor Kepercayaan**: Metrik kepercayaan keputusan AI yang transparan
 
-### 🔍 Advanced Detection Capabilities
-- **Multi-condition Detection**: Depression, Anxiety, Stress, and Normal states
-- **Sentiment Analysis**: Real-time emotional tone assessment
-- **Risk Level Assessment**: High, Medium, Low risk categorization
-- **Confidence Scoring**: Transparent AI decision confidence metrics
+### 📊 Analitik Komprehensif
+- **Analisis Pola Temporal**: Melacak tren kesehatan mental sepanjang waktu
+- **Dashboard Interaktif**: Visualisasi distribusi kondisi dan pola
+- **Pelacakan Riwayat**: Menjaga riwayat analisis dengan fungsi ekspor
+- **Laporan Detail**: Menghasilkan laporan kesehatan mental yang komprehensif
 
-### 📊 Comprehensive Analytics
-- **Temporal Pattern Analysis**: Track mental health trends over time
-- **Interactive Dashboards**: Visualize condition distribution and patterns
-- **History Tracking**: Maintain analysis history with export functionality
-- **Detailed Reports**: Generate comprehensive mental health reports
+### 🛡️ Fitur yang Ditingkatkan
+- **Pengenalan Emoji**: Menganalisis konteks emosional dari emoji
+- **Pembobotan Kata Kunci**: Memprioritaskan indikator klinis
+- **Ensemble Multi-model**: Menggabungkan beberapa model AI untuk akurasi
+- **Pemrosesan Real-time**: Analisis dan umpan balik instan
 
-### 🛡️ Enhanced Features
-- **Emoji Recognition**: Analyzes emotional context from emojis
-- **Keyword Weighting**: Prioritizes clinical indicators
-- **Multi-model Ensemble**: Combines multiple AI models for accuracy
-- **Real-time Processing**: Instant analysis and feedback
+## 🚀 Mulai Cepat
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.8 or higher
+### Prasyarat
+- Python 3.8 atau lebih tinggi
 - pip package manager
 
-### Installation
+### Instalasi
 
-1. **Clone the repository**
+1. **Clone repository**
 ```bash
-git clone https://github.com/yourusername/mental-health-detection.git
+git clone https://github.com/yulvianiputeri/mental-health-detection.git
 cd mental-health-detection
 ```
 
-2. **Create virtual environment**
+2. **Buat virtual environment**
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Di Windows: venv\Scripts\activate
 ```
 
 3. **Install dependencies**
@@ -49,130 +47,275 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. **Download NLTK data**
+4. **Download data NLTK**
 ```bash
 python -c "import nltk; nltk.download('punkt'); nltk.download('vader_lexicon')"
 ```
 
-5. **Train the model**
+5. **Latih model**
 ```bash
 python train_model.py
 ```
 
-6. **Run the application**
+6. **Jalankan aplikasi**
 ```bash
 streamlit run app.py
 ```
 
-## 📁 Project Structure
+## 📁 Struktur Proyek
 
 ```
 mental-health-detection/
 │
-├── mental_health_detector.py  # Core AI detection engine
-├── train_model.py            # Model training script
-├── app.py                    # Streamlit web application
-├── requirements.txt          # Python dependencies
-├── README.md                 # Project documentation
-├── mental_health_model_advanced.pkl  # Trained model (generated)
-└── data/                     # Training data directory (optional)
+├── mental_health_detector.py  # Engine deteksi AI inti
+├── train_model.py            # Script pelatihan model
+├── app.py                    # Aplikasi web Streamlit
+├── requirements.txt          # Dependencies Python
+├── README.md                 # Dokumentasi proyek
+├── mental_health_model_advanced.pkl  # Model terlatih (dihasilkan)
+└── data/                     # Direktori data pelatihan (opsional)
 ```
 
-## 🧠 How It Works
+## 🧠 Cara Kerja
 
-### 1. Text Processing
-- Preprocesses input text (lowercase, special character removal)
-- Extracts linguistic features (TF-IDF, n-grams)
-- Analyzes sentiment using VADER
-- Identifies mental health keywords
+### 1. Pemrosesan Teks
+- Memproses teks input (huruf kecil, penghapusan karakter khusus)
+- Ekstraksi fitur linguistik (TF-IDF, n-grams)
+- Analisis sentimen menggunakan VADER
+- Identifikasi kata kunci kesehatan mental
 
-### 2. Feature Extraction
-- **Text Features**: Length, word count, punctuation
-- **Sentiment Features**: Positive, negative, neutral scores
-- **Emoji Features**: Emotional context from emojis
-- **Keyword Features**: Weighted mental health indicators
+### 2. Ekstraksi Fitur
+- **Fitur Teks**: Panjang, jumlah kata, tanda baca
+- **Fitur Sentimen**: Skor positif, negatif, netral
+- **Fitur Emoji**: Konteks emosional dari emoji
+- **Fitur Kata Kunci**: Indikator kesehatan mental berbobot
 
 ### 3. Machine Learning
-- **Algorithm**: Gradient Boosting Classifier
-- **Cross-validation**: 5-fold validation for robustness
-- **Feature Importance**: Identifies key predictive features
+- **Algoritma**: Gradient Boosting Classifier
+- **Cross-validation**: Validasi 5-fold untuk ketahanan
+- **Feature Importance**: Mengidentifikasi fitur prediktif utama
 
-### 4. Risk Assessment
-- Combines condition prediction with confidence scores
-- Calculates risk levels based on severity and certainty
-- Provides actionable recommendations
+### 4. Penilaian Risiko
+- Menggabungkan prediksi kondisi dengan skor kepercayaan
+- Menghitung level risiko berdasarkan keparahan dan kepastian
+- Memberikan rekomendasi yang dapat ditindaklanjuti
 
-## 📊 Model Performance
+## 📊 Performa Model
 
-| Metric | Score |
+| Metrik | Skor |
 |--------|-------|
-| Training Accuracy | 92% |
-| Testing Accuracy | 88% |
+| Akurasi Training | 92% |
+| Akurasi Testing | 88% |
 | Cross-validation | 87% (±3%) |
 
-## 🖥️ User Interface
+## 🖥️ Antarmuka Pengguna
 
-### Main Features:
-1. **Analysis Tab**: Real-time text analysis with visual results
-2. **Dashboard Tab**: Analytics and trend visualization
-3. **History Tab**: Past analyses with export functionality
-4. **Resources Tab**: Mental health resources and crisis support
+### Fitur Utama:
+1. **Tab Analisis**: Analisis teks real-time dengan hasil visual
+2. **Tab Dashboard**: Analitik dan visualisasi tren
+3. **Tab Riwayat**: Analisis masa lalu dengan fungsi ekspor
+4. **Tab Sumber Daya**: Sumber daya kesehatan mental dan dukungan krisis
 
-### Input Methods:
-- Single message analysis
-- Batch chat history processing
-- Voice input (coming soon)
+### Metode Input:
+- Analisis pesan tunggal
+- Pemrosesan riwayat chat batch
+- Input suara (segera hadir)
 
-## 🔒 Privacy & Security
+## 🔒 Privasi & Keamanan
 
-- **No Data Storage**: Analyses are performed locally
-- **Session-based**: Data exists only during active sessions
-- **Encrypted Communication**: Secure data transmission
-- **Anonymous Processing**: No personal identification required
+- **Tidak Ada Penyimpanan Data**: Analisis dilakukan secara lokal
+- **Berbasis Sesi**: Data hanya ada selama sesi aktif
+- **Komunikasi Terenkripsi**: Transmisi data yang aman
+- **Pemrosesan Anonim**: Tidak memerlukan identifikasi personal
 
-## ⚠️ Important Disclaimers
+## ⚠️ Disclaimer Penting
 
-This system is:
-- **NOT a medical diagnostic tool**
-- **NOT a replacement for professional mental health care**
-- **For screening and awareness purposes only**
-- **Should be used in conjunction with professional guidance**
+Sistem ini:
+- **BUKAN alat diagnostik medis**
+- **BUKAN pengganti perawatan kesehatan mental profesional**
+- **Hanya untuk tujuan screening dan awareness**
+- **Harus digunakan bersamaan dengan bimbingan profesional**
 
-## 🆘 Crisis Resources
+## 🆘 Sumber Daya Krisis
 
-If you're experiencing a mental health crisis:
-- **Emergency**: 911
-- **988 Suicide & Crisis Lifeline**: Call or text 988
-- **Crisis Text Line**: Text HOME to 741741
-- **SAMHSA National Helpline**: 1-800-662-4357
+Jika Anda mengalami krisis kesehatan mental:
+- **Darurat**: 112/119
+- **Sejiwa (Hotline Bunuh Diri)**: 119 ext 8
+- **Halodoc Konseling**: 500-454
+- **LPSP3 UI**: (021) 78842580
 
-## 🤝 Contributing
+## 🤝 Kontribusi
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Kontribusi sangat diterima! Silakan kirim Pull Request.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork repository
+2. Buat feature branch (`git checkout -b feature/FiturMenakjubkan`)
+3. Commit perubahan (`git commit -m 'Tambah FiturMenakjubkan'`)
+4. Push ke branch (`git push origin feature/FiturMenakjubkan`)
+5. Buka Pull Request
 
-## 📝 License
+## 📝 Lisensi
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Proyek ini dilisensikan di bawah MIT License - lihat file [LICENSE](LICENSE) untuk detail.
 
-## 🙏 Acknowledgments
+## 🙏 Pengakuan
 
-- NLTK for natural language processing
-- Scikit-learn for machine learning algorithms
-- Streamlit for the web interface
-- Plotly for interactive visualizations
+- NLTK untuk natural language processing
+- Scikit-learn untuk algoritma machine learning
+- Streamlit untuk antarmuka web
+- Plotly untuk visualisasi interaktif
 
-## 📧 Contact
+## 📧 Kontak
 
-For questions or support:
+Untuk pertanyaan atau dukungan:
 - Email: yulvianipps02@gmail.com
 - Issues: [GitHub Issues](https://github.com/yulvianiputeri/mental-health-detection/issues)
 
 ---
 
-**Remember**: Your mental health matters. This tool is here to help raise awareness, but professional support is invaluable. Don't hesitate to reach out to mental health professionals when needed. 💚
+**Ingat**: Kesehatan mental Anda penting. Alat ini ada untuk membantu meningkatkan awareness, tetapi dukungan profesional sangat berharga. Jangan ragu untuk menghubungi profesional kesehatan mental ketika diperlukan. 💚
+
+## 🔧 Troubleshooting
+
+### Error Umum dan Solusi
+
+#### 1. **"LookupError: vader_lexicon not found"**
+```bash
+# Solusi cepat:
+python fix_nltk_error.py
+
+# Atau manual:
+python -c "import nltk; nltk.download('vader_lexicon')"
+```
+
+#### 2. **"The TF-IDF vectorizer is not fitted"**
+```bash
+# Model belum dilatih, jalankan:
+python train_model.py
+
+# Verifikasi fix:
+python quick_fix.py
+```
+
+#### 3. **"ModuleNotFoundError"**
+```bash
+# Install dependencies:
+pip install -r requirements.txt
+
+# Atau reinstall semua:
+pip uninstall streamlit pandas numpy scikit-learn nltk plotly
+pip install -r requirements.txt
+```
+
+#### 4. **Error SSL di Windows**
+```bash
+# Jalankan script fix:
+python fix_nltk_error.py
+
+# Atau set SSL manual:
+python -c "import ssl; ssl._create_default_https_context = ssl._create_unverified_context"
+```
+
+### Setup Otomatis
+
+Untuk memudahkan, gunakan script setup otomatis:
+
+```bash
+# Setup lengkap (recommended):
+python setup_project.py
+
+# Quick fix untuk error umum:
+python quick_fix.py
+
+# Download NLTK data saja:
+python download_nltk_data.py
+```
+
+### Verifikasi Instalasi
+
+```bash
+# Cek semua komponen:
+python validate_setup.py
+```
+
+## 🆘 Jika Masih Bermasalah
+
+1. **Buat ulang virtual environment:**
+   ```bash
+   # Hapus venv lama
+   rm -rf venv  # Linux/Mac
+   rmdir /s venv  # Windows
+   
+   # Buat baru
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate  # Windows
+   
+   # Install ulang
+   pip install -r requirements.txt
+   ```
+
+2. **Cek Python dan pip version:**
+   ```bash
+   python --version  # Minimal 3.8
+   pip --version
+   ```
+
+3. **Manual download NLTK:**
+   ```python
+   import nltk
+   nltk.download_shell()  # GUI downloader
+   ```
+
+## 📋 Langkah-langkah Setup (Detail)
+
+### 1. Setup Environment
+```bash
+# Clone repository
+git clone https://github.com/yulvianiputeri/mental-health-detection.git
+cd mental-health-detection
+
+# Virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate  # Windows
+
+# Dependencies
+pip install -r requirements.txt
+```
+
+### 2. Download Data NLTK
+```bash
+# Otomatis
+python download_nltk_data.py
+
+# Manual
+python -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt')"
+```
+
+### 3. Training Model
+```bash
+# Training (memerlukan waktu 2-5 menit)
+python train_model.py
+```
+
+### 4. Running App
+```bash
+# Jalankan aplikasi
+streamlit run app.py
+```
+
+### 5. Verifikasi
+```bash
+# Cek semua OK
+python validate_setup.py
+```
+
+## 📈 Pengembangan Selanjutnya
+
+- [ ] Dukungan bahasa Indonesia yang lebih baik
+- [ ] Integrasi dengan WhatsApp/Telegram
+- [ ] Analisis audio real-time
+- [ ] Dashboard admin untuk psikolog
+- [ ] API untuk integrasi dengan sistem lain
+- [ ] Notifikasi push untuk reminder check-in

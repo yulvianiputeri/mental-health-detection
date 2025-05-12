@@ -5,9 +5,9 @@ import pandas as pd
 from datetime import datetime, timedelta
 import random
 
-# Extended training data
+# Data pelatihan yang diperluas (Bahasa Indonesia)
 training_data = {
-    'depression': [
+    'depresi': [
         "Saya merasa sangat sedih dan tidak ada harapan lagi dalam hidup",
         "Hidup saya tidak ada artinya, saya gagal terus",
         "Saya kesepian dan merasa tidak ada yang peduli dengan saya",
@@ -27,10 +27,15 @@ training_data = {
         "Rasanya ingin tidur dan tidak bangun lagi",
         "Saya membenci diri saya sendiri",
         "Hidup terasa seperti beban yang berat",
-        "Saya merasa terjebak dalam kegelapan"
+        "Saya merasa terjebak dalam kegelapan",
+        "Sedih banget hari ini",
+        "Gak ada keinginan untuk ngapa-ngapain",
+        "Putus asa dengan semua yang terjadi",
+        "Rasanya hidup gak ada makna",
+        "Mau nangis terus tapi air mata gak keluar"
     ],
     
-    'anxiety': [
+    'kecemasan': [
         "Saya sangat cemas dengan ujian besok, jantung saya berdebar kencang",
         "Saya takut sekali kalau harus presentasi di depan banyak orang",
         "Pikiran saya tidak bisa tenang, selalu overthinking",
@@ -50,7 +55,12 @@ training_data = {
         "Merasa seperti akan pingsan saat panik",
         "Selalu memikirkan skenario terburuk",
         "Cemas berlebihan tentang kesehatan",
-        "Takut sendirian tapi juga takut keramaian"
+        "Takut sendirian tapi juga takut keramaian",
+        "Panik attack lagi datang",
+        "Gak bisa fokus gara-gara cemas",
+        "Kepikiran terus hal yang belum tentu terjadi",
+        "Khawatir banget sama masa depan",
+        "Jantung berdebar tiap mikirin tugas"
     ],
     
     'stress': [
@@ -73,7 +83,12 @@ training_data = {
         "Saya merasa terjebak dalam rutinitas",
         "Tekanan untuk sukses sangat membebani",
         "Work-life balance berantakan total",
-        "Saya butuh liburan dari semua ini"
+        "Saya butuh liburan dari semua ini",
+        "Capek banget sama kerjaan yang numpuk",
+        "Stress banget sama target yang gak realistis",
+        "Kepala rasanya mau pecah mikirin deadline",
+        "Burnout parah nih rasanya",
+        "Tekanan kerja bikin gak bisa santai"
     ],
     
     'normal': [
@@ -96,11 +111,16 @@ training_data = {
         "Saya percaya diri dengan kemampuan saya",
         "Menikmati me-time dengan baca buku favorit",
         "Bersemangat menjalani hari-hari ke depan",
-        "Merasa content dengan hidup saat ini"
+        "Merasa content dengan hidup saat ini",
+        "Alhamdulillah hari ini lancar semua",
+        "Happy banget bisa ketemu keluarga",
+        "Semangat ngerjain hobi yang disuka",
+        "Merasa tenang dan damai",
+        "Syukur banyak hal positif hari ini"
     ]
 }
 
-# Prepare data for training
+# Persiapkan data untuk pelatihan
 all_texts = []
 all_labels = []
 
@@ -108,51 +128,55 @@ for condition, texts in training_data.items():
     all_texts.extend(texts)
     all_labels.extend([condition] * len(texts))
 
-# Create synthetic timestamps for temporal analysis demo
+# Buat timestamp sintetis untuk demo analisis temporal
 base_time = datetime.now() - timedelta(days=30)
 timestamps = []
 for i in range(len(all_texts)):
-    # Add some randomness to timestamps
-    hours_offset = random.randint(0, 720)  # Random within 30 days
+    # Tambahkan randomness pada timestamps
+    hours_offset = random.randint(0, 720)  # Random dalam 30 hari
     timestamps.append(base_time + timedelta(hours=hours_offset))
 
-# Initialize and train model
-print("🔧 Initializing Advanced Mental Health Detector...")
+# Inisialisasi dan latih model
+print("🔧 Inisialisasi Advanced Mental Health Detector...")
 detector = AdvancedMentalHealthDetector()
 
-print("\n📚 Training model with enhanced features...")
+print("\n📚 Melatih model dengan fitur yang ditingkatkan...")
 train_score, test_score = detector.train(all_texts, all_labels)
 
-# Save model
-print("\n💾 Saving trained model...")
+# Simpan model
+print("\n💾 Menyimpan model yang telah dilatih...")
 detector.save_model('mental_health_model_advanced.pkl')
-print("✅ Model saved successfully!")
+print("✅ Model berhasil disimpan!")
 
-# Test the model
-print("\n🧪 Testing the model...")
+# Uji model
+print("\n🧪 Menguji model...")
 test_cases = [
     "Saya merasa sangat cemas dan khawatir dengan masa depan 😟",
     "Hari ini mood saya bagus, produktif banget!",
     "Stress berat mikirin deadline yang mepet",
-    "Sedih banget, rasanya gak ada yang peduli"
+    "Sedih banget, rasanya gak ada yang peduli",
+    "Alhamdulillah hari ini banyak hal baik yang terjadi",
+    "Panik attack datang lagi, susah napas",
+    "Burnout parah nih rasanya, capek banget",
+    "Bersyukur banget bisa ngumpul sama keluarga"
 ]
 
 for test_text in test_cases:
     result = detector.predict(test_text)
-    print(f"\n📝 Text: {test_text}")
-    print(f"🔍 Condition: {result['condition']}")
+    print(f"\n📝 Teks: {test_text}")
+    print(f"🔍 Kondisi: {result['condition']}")
     print(f"📊 Confidence: {result['confidence']:.2%}")
-    print(f"⚠️ Risk Level: {result['risk_level']}")
-    print(f"💭 Sentiment: {result['sentiment']['compound']:.3f}")
+    print(f"⚠️ Level Risiko: {result['risk_level']}")
+    print(f"💭 Sentimen: {result['sentiment']['compound']:.3f}")
 
-# Feature importance
-print("\n📈 Top 10 Most Important Features:")
+# Pentingnya fitur
+print("\n📈 10 Fitur Paling Penting:")
 importance = detector.get_feature_importance()
 if importance is not None:
     print(importance.head(10))
 
-# Test chat history analysis
-print("\n📅 Testing Chat History Analysis...")
+# Uji analisis riwayat chat
+print("\n📅 Menguji Analisis Riwayat Chat...")
 chat_history = [
     "Pagi ini merasa cemas banget",
     "Siang tadi stress mikirin kerjaan",
@@ -161,6 +185,10 @@ chat_history = [
 ]
 
 history_result = detector.analyze_chat_history(chat_history, timestamps[:4])
-print(f"Dominant condition: {history_result['summary']['dominant_condition']}")
-print(f"High risk messages: {history_result['summary']['high_risk_messages']}")
-print(f"Average confidence: {history_result['summary']['average_confidence']:.2%}")
+print(f"Kondisi dominan: {history_result['summary']['dominant_condition']}")
+print(f"Pesan risiko tinggi: {history_result['summary']['high_risk_messages']}")
+print(f"Confidence rata-rata: {history_result['summary']['average_confidence']:.2%}")
+
+print("\n✅ Pelatihan dan pengujian model selesai!")
+print("🎉 Model siap digunakan dengan aplikasi Streamlit!")
+print("Jalankan: streamlit run app.py")
