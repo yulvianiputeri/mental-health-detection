@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -177,7 +175,7 @@ def get_enhanced_recommendations(condition, risk_level):
 # Aplikasi utama
 def main():
     # Header
-    st.markdown('<h1 class="main-header">🧠 Sistem Deteksi Kesehatan Mental Lanjutan</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🧠 Sistem Deteksi Kesehatan Mental</h1>', unsafe_allow_html=True)
     
     # Inisialisasi session state
     if 'history' not in st.session_state:
@@ -192,17 +190,6 @@ def main():
         user_name = st.text_input("Nama", "Anonim")
         user_age = st.number_input("Umur", 18, 100, 25)
         
-        st.markdown("---")
-        
-        # Aksi cepat
-        st.subheader("⚡ Aksi Cepat")
-        if st.button("📊 Lihat Analitik", use_container_width=True):
-            st.session_state.show_analytics = True
-        if st.button("📝 Ekspor Laporan", use_container_width=True):
-            st.session_state.export_report = True
-        if st.button("🆘 Sumber Bantuan Krisis", use_container_width=True):
-            st.session_state.show_crisis = True
-            
         st.markdown("---")
         
         # Info
@@ -569,15 +556,16 @@ def main():
                         st.write(f"Confidence: {entry['result']['confidence']:.1%}")
                         st.write(f"Level Risiko: {entry['result']['risk_level']}")
                     
-                    with col2:
-                        # Gauge sentimen
-                        sentiment_score = entry['result']['sentiment']['compound']
-                        fig_gauge = go.Figure(go.Indicator(
-                            mode="gauge+number",
-                            value=sentiment_score,
-                            domain={'x': [0, 1], 'y': [0, 1]},
-                            title={'text': "Sentimen"},
-                            gauge={'axis': {'range': [-1, 1]},
+                    # Di dalam loop for idx, entry in enumerate(reversed(st.session_state.history)):
+            with col2:
+                    # Gauge sentimen dengan key unik
+                    sentiment_score = entry['result']['sentiment']['compound']
+                    fig_gauge = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=sentiment_score,
+                        domain={'x': [0, 1], 'y': [0, 1]},
+                        title={'text': "Sentimen"},
+                        gauge={'axis': {'range': [-1, 1]},
                                   'bar': {'color': "purple"},
                                   'steps': [
                                       {'range': [-1, -0.5], 'color': "red"},
@@ -586,8 +574,14 @@ def main():
                                   'threshold': {'line': {'color': "black", 'width': 4},
                                               'thickness': 0.75,
                                               'value': sentiment_score}}))
-                        fig_gauge.update_layout(height=200)
-                        st.plotly_chart(fig_gauge, use_container_width=True)
+                    fig_gauge.update_layout(height=200)
+                    
+                    # Tambahkan key unik di sini
+                    st.plotly_chart(
+                        fig_gauge, 
+                        use_container_width=True,
+                        key=f"sentiment_gauge_{entry['timestamp'].timestamp()}"  # Key unik
+                    )
         else:
             st.info("📝 Belum ada riwayat. Mulai menganalisis teks untuk membangun riwayat Anda!")
     
