@@ -276,13 +276,11 @@ def main():
                         met_col1, met_col2, met_col3 = st.columns(3)
                         
                         with met_col1:
-                            st.metric("Skor Sentimen", f"<span style='color: #333;'>{result['sentiment']['compound']:.3f}</span>", unsafe_allow_html=True)
-                        
+                            st.metric("Skor Sentimen", f"{result['sentiment']['compound']:.3f}")
                         with met_col2:
-                            st.metric("Margin Confidence", f"<span style='color: #333;'>{result['confidence_margin']:.2%}</span>", unsafe_allow_html=True)
-                        
+                            st.metric("Margin Confidence", f"{result['confidence_margin']:.2%}")
                         with met_col3:
-                            st.metric("Jumlah Kata", f"<span style='color: #333;'>{len(user_input.split())}</span>", unsafe_allow_html=True)
+                            st.metric("Jumlah Kata", len(user_input.split()))
 
                         
                         # Distribusi probabilitas
