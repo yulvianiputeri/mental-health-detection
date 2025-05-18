@@ -276,11 +276,14 @@ def main():
                         met_col1, met_col2, met_col3 = st.columns(3)
                         
                         with met_col1:
-                            st.metric("Skor Sentimen", f"{result['sentiment']['compound']:.3f}")
+                            st.metric("Skor Sentimen", f"{result['sentiment']['compound']:.3f}", 
+                                      help="Skor sentimen berdasarkan analisis teks.")
                         with met_col2:
-                            st.metric("Margin Confidence", f"{result['confidence_margin']:.2%}")
+                            st.metric("Margin Confidence", f"{result['confidence_margin']:.2%}", 
+                                      help="Confidence margin atau rentang keyakinan model.")
                         with met_col3:
-                            st.metric("Jumlah Kata", len(user_input.split()))
+                            st.metric("Jumlah Kata", len(user_input.split()), 
+                                      help="Jumlah kata dalam input teks Anda.")
                         
                         # Distribusi probabilitas
                         st.subheader("🎯 Probabilitas Kondisi")
