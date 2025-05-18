@@ -15,7 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS kustom
 st.markdown("""
 <style>
     .main-header {
@@ -66,7 +65,7 @@ def load_detector():
     
     try:
         detector.load_model('mental_health_model_advanced.pkl')
-        st.success("✅ Model berhasil dimuat!")
+        # st.success("✅ Model berhasil dimuat!")
         return detector
     except Exception as e:
         st.error(f"""
@@ -249,7 +248,7 @@ def main():
                         })
                         
                         # Tampilkan hasil
-                        st.success("✅ Analisis selesai!")
+                        # st.success("✅ Analisis selesai!")
                         
                         # Kartu kondisi
                         condition_colors = {
@@ -556,7 +555,6 @@ def main():
                         st.write(f"Confidence: {entry['result']['confidence']:.1%}")
                         st.write(f"Level Risiko: {entry['result']['risk_level']}")
                     
-                    # Di dalam loop for idx, entry in enumerate(reversed(st.session_state.history)):
             with col2:
                     # Gauge sentimen dengan key unik
                     sentiment_score = entry['result']['sentiment']['compound']

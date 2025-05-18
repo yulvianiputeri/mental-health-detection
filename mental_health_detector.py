@@ -117,6 +117,24 @@ class AdvancedMentalHealthDetector:
         text = re.sub(r'[^a-zA-Z0-9\s\!\?\.\,]', '', text)
         return text, original
 
+    def get_feature_importance(self):
+        """Mendapatkan fitur terpenting dari model"""
+        if not hasattr(self, 'model') or not hasattr(self, 'feature_columns'):
+            return None
+        
+        # Pastikan model sudah dilatih
+        if not hasattr(self.model, 'feature_importances_'):
+            return None
+        
+        # Buat DataFrame dari feature importance
+        importance_df = pd.DataFrame({
+            'feature': self.feature_columns,
+            'importance': self.model.feature_importances_
+        })
+        
+        # Urutkan berdasarkan importance (descending)
+        return importance_df.sort_values('importance', ascending=False)
+
     def train(self, texts, labels, validate=True):
         features = []
         processed_texts = []
@@ -233,6 +251,60 @@ class AdvancedMentalHealthDetector:
                 self.mental_health_keywords = data.get('keywords', {})
         except Exception as e:
             print(f"Error loading model: {str(e)}")
+
+        # Tambahkan method ini ke class AdvancedMentalHealthDetector di mental_health_detector.py
+    def analyze_chat_history(self, messages, timestamps=None):
+        """Menganalisis riwayat chat untuk tren kesehatan mental"""
+        if timestamps is None:
+            timestamps = [datetime.now() - timedelta(hours=i) for i in range(len(messages))]
+        
+        if len(messages) != len(timestamps):
+            raise ValueError("Jumlah pesan dan timestamps harus sama")
+        
+        results = {
+            'individual_results': [],
+            'summary': {}
+        }
+        
+        # Analisis setiap pesan
+        for i, (message, timestamp) in enumerate(zip(messages, timestamps)):
+            if not message.strip():
+                continue
+            
+            prediction = self.predict(message)
+            
+            # Tambahkan preview pesan
+            preview = message[:30] + "..." if len(message) > 30 else message
+            prediction['message_preview'] = preview
+            
+            results['individual_results'].append(prediction)
+        
+        # Buat ringkasan
+        if results['individual_results']:
+            condition_counts = {}
+            confidence_sum = 0
+            high_risk_count = 0
+            
+            for result in results['individual_results']:
+                condition = result['condition']
+                condition_counts[condition] = condition_counts.get(condition, 0) + 1
+                confidence_sum += result['confidence']
+                if result['risk_level'] == 'High':
+                    high_risk_count += 1
+            
+            # Tentukan kondisi dominan
+            dominant_condition = max(condition_counts.items(), key=lambda x: x[1])[0]
+            
+            # Buat statistik ringkasan
+            results['summary'] = {
+                'total_messages': len(results['individual_results']),
+                'dominant_condition': dominant_condition,
+                'high_risk_messages': high_risk_count,
+                'average_confidence': confidence_sum / len(results['individual_results']) if results['individual_results'] else 0,
+                'condition_distribution': condition_counts
+            }
+        
+        return results
 
 if __name__ == "__main__":
     detector = AdvancedMentalHealthDetector()
