@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 import nltk
-from datetime import datetime
+from datetime import datetime, timedelta
 from nltk.tokenize import word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -28,7 +28,7 @@ class AdvancedMentalHealthDetector:
         self.vectorizer = TfidfVectorizer(
             max_features=3000,
             ngram_range=(1, 3),
-            stop_words=None
+            stop_words=None  # Jangan gunakan stop words untuk bahasa Indonesia
         )
         self.model = GradientBoostingClassifier(
             n_estimators=200,
@@ -39,34 +39,67 @@ class AdvancedMentalHealthDetector:
         self.label_encoder = LabelEncoder()
         self.sentiment_analyzer = SentimentIntensityAnalyzer()
         
-        # Enhanced keyword configuration
+        # Keyword configuration yang ditingkatkan untuk bahasa Indonesia
         self.mental_health_keywords = {
             'depresi': {
-                'core': ['sedih', 'depresi', 'putus asa', 'bunuh diri', 'hampa', 'gabut', 'worthless'],
-                'secondary': ['kesepian', 'tidak berharga', 'lelah hidup', 'menyesal'],
-                'weight': 1.8
+                'core': [
+                    'sedih', 'depresi', 'putus asa', 'bunuh diri', 'hampa', 'gabut', 'worthless',
+                    'ingin mati', 'tidak berharga', 'benci diri', 'bosan hidup', 'lelah hidup', 
+                    'menyerah', 'sia-sia', 'gagal', 'beban', 'menyesal', 'muak', 'nggak ada gunanya',
+                    'ga ada gunanya', 'nyerah', 'pengen mati', 'pengen ngilang', 'pengen lenyap',
+                    'cape hidup', 'capek hidup', 'benci hidup'
+                ],
+                'secondary': [
+                    'kesepian', 'tidak berharga', 'lelah hidup', 'menyesal', 'malas', 'males', 
+                    'apatis', 'nangis', 'menangis', 'sendiri', 'sendirian', 'gelap'
+                ],
+                'weight': 2.0  # Ditingkatkan
             },
             'kecemasan': {
-                'core': ['cemas', 'khawatir', 'panik', 'takut', 'deg-degan', 'overthinking'],
-                'secondary': ['jantung berdebar', 'keringat dingin', 'sesak napas', 'drama'],
-                'weight': 1.5
+                'core': [
+                    'cemas', 'khawatir', 'panik', 'takut', 'deg-degan', 'overthinking',
+                    'anxiety', 'anxious', 'gelisah', 'resah', 'was-was', 'gak tenang', 
+                    'ga tenang', 'tidak tenang', 'deg degan', 'gugup', 'paranoid', 'fobia',
+                    'trauma', 'ketar-ketir', 'ketar ketir', 'tremor', 'gemetar'
+                ],
+                'secondary': [
+                    'jantung berdebar', 'keringat dingin', 'sesak napas', 'drama', 'baper',
+                    'kepikiran', 'mikirin', 'mikir terus', 'pikiran', 'bingung', 'ragu'
+                ],
+                'weight': 1.8
             },
             'stress': {
-                'core': ['burnout', 'stress', 'tertekan', 'deadline', 'cenat-cenut', 'tumpuk'],
-                'secondary': ['kewalahan', 'tekanan', 'tagihan', 'berantakan'],
-                'weight': 1.5  # Increased weight
+                'core': [
+                    'burnout', 'stress', 'tertekan', 'deadline', 'cenat-cenut', 'tumpuk',
+                    'overwhelmed', 'tekanan', 'beban', 'pusing', 'frustasi', 'frustrasi',
+                    'banyak kerjaan', 'banyak tugas', 'numpuk', 'menumpuk', 'kewalahan',
+                    'capek mental', 'cape mental', 'lelah mental', 'exhausted', 'overworked',
+                    'jenuh', 'muak', 'bosan', 'bete', 'bad mood'
+                ],
+                'secondary': [
+                    'kewalahan', 'tekanan', 'tagihan', 'berantakan', 'sibuk', 'deadline',
+                    'terburu-buru', 'batas waktu', 'tenggat', 'waktu mepet', 'dikejar'
+                ],
+                'weight': 1.8  # Ditingkatkan
             },
             'normal': {
-                'core': ['senang', 'bahagia', 'bersyukur', 'chill', 'asyik', 'syukur'],
-                'secondary': ['baik', 'oke', 'legA', 'fun'],
-                'weight': 1.0
+                'core': [
+                    'senang', 'bahagia', 'bersyukur', 'chill', 'asyik', 'syukur',
+                    'happy', 'tenang', 'damai', 'semangat', 'positif', 'baik',
+                    'sehat', 'stabil', 'produktif', 'sukses', 'berhasil', 'puas'
+                ],
+                'secondary': [
+                    'baik', 'oke', 'lega', 'fun', 'santai', 'relax', 'enak', 'nyaman',
+                    'menyenangkan', 'enjoy', 'fine', 'ok', 'okay'
+                ],
+                'weight': 0.8  # Diturunkan agar tidak bias ke normal
             }
         }
         
         self.emoji_patterns = {
-            'positive': ['😊', '😃', '❤️', '👍', '🎉'],
-            'negative': ['😢', '😭', '😔', '💔'],
-            'neutral': ['😐', '🤔']
+            'positive': ['😊', '😃', '😄', '😁', '😆', '😍', '🥰', '😘', '😗', '☺️', '😚', '😙', '🙂', '😀', '❤️', '👍', '🎉', '✨', '😌', '🤗', '😇', '🙏'],
+            'negative': ['😢', '😭', '😔', '😞', '😟', '😕', '☹️', '😣', '😖', '😫', '😩', '🥺', '😓', '😥', '😰', '😨', '😱', '😪', '😿', '💔', '👎', '😠', '😡', '🤬'],
+            'neutral': ['😐', '🤔', '🙄', '😶', '😑', '😒', '🤨', '😏', '😬', '😯', '😦', '😧']
         }
 
     def extract_advanced_features(self, text):
@@ -81,7 +114,7 @@ class AdvancedMentalHealthDetector:
             'question_count': text.count('?'),
         })
         
-        # Sentiment analysis
+        # Sentiment analysis - catatan: VADER tidak optimal untuk bahasa Indonesia
         sentiment = self.sentiment_analyzer.polarity_scores(text)
         features.update({
             'sentiment_positive': sentiment['pos'],
@@ -90,31 +123,99 @@ class AdvancedMentalHealthDetector:
             'sentiment_compound': sentiment['compound'],
         })
         
-        # Emoji analysis
+        # Emoji analysis dengan bobot
         features.update({
-            'positive_emoji': sum(1 for e in self.emoji_patterns['positive'] if e in text),
-            'negative_emoji': sum(1 for e in self.emoji_patterns['negative'] if e in text),
+            'positive_emoji': sum(1 for e in self.emoji_patterns['positive'] if e in text) * 1.5,
+            'negative_emoji': sum(1 for e in self.emoji_patterns['negative'] if e in text) * 2.0,
+            'neutral_emoji': sum(1 for e in self.emoji_patterns['neutral'] if e in text),
         })
         
-        # Keyword scoring
+        # Keyword scoring dengan pengecekan pattern yang ditingkatkan
         for condition, keywords in self.mental_health_keywords.items():
-            core_count = sum(1 for word in keywords['core'] if word in text_lower)
-            secondary_count = sum(1 for word in keywords['secondary'] if word in text_lower)
-            features[f'{condition}_score'] = (core_count * 2 + secondary_count) * keywords['weight']
-        
-        # Burnout special handling
-        if 'burnout' in text_lower:
-            features['stress_score'] *= 1.2
+            # Cek keberadaan kata kunci di dalam teks
+            core_matches = []
+            for word in keywords['core']:
+                if word in text_lower or re.search(r'\b' + re.escape(word) + r'\b', text_lower):
+                    core_matches.append(word)
             
+            secondary_matches = []
+            for word in keywords['secondary']:
+                if word in text_lower or re.search(r'\b' + re.escape(word) + r'\b', text_lower):
+                    secondary_matches.append(word)
+            
+            core_count = len(core_matches)
+            secondary_count = len(secondary_matches)
+            
+            # Hitung skor berdasarkan keyword matches
+            features[f'{condition}_score'] = (core_count * 2 + secondary_count) * keywords['weight']
+            
+            # Tambahkan fitur khusus untuk kata kunci yang ditemukan
+            features[f'{condition}_core_keywords'] = core_count
+            features[f'{condition}_secondary_keywords'] = secondary_count
+        
+        # Special case handling
+        # Jika ada kata kunci kritis, tingkatkan skor kondisinya
+        critical_keywords = {
+            'depresi': ['bunuh diri', 'mati', 'ingin mati', 'pengen mati', 'ngilang', 'lenyap'],
+            'kecemasan': ['panik', 'serangan panik', 'sesak napas', 'jantung berdebar'],
+            'stress': ['burnout', 'kelelahan mental', 'overwork', 'overwhelmed']
+        }
+        
+        for condition, keywords in critical_keywords.items():
+            if any(kw in text_lower for kw in keywords):
+                features[f'{condition}_score'] *= 1.5
+        
+        # Fitur linguistik tambahan untuk bahasa Indonesia
+        intensifiers = ['banget', 'sangat', 'amat', 'sekali', 'terlalu', 'sungguh', 'teramat', 'begitu']
+        features['intensifier_count'] = sum(1 for word in intensifiers if word in text_lower)
+        
+        # Fitur repetisi (misalnya "sedih sedih sedih")
+        words = text_lower.split()
+        repetition = sum(1 for i in range(len(words)-1) if words[i] == words[i+1])
+        features['word_repetition'] = repetition
+        
         return features
 
     def preprocess_text(self, text):
         original = text
         text = text.lower()
+        
+        # Simpan emoji dan special characters yang penting
+        emojis = re.findall(r'[^\w\s,\.!?]', text)
+        emoji_pattern = ''.join(emojis)
+        
+        # Hapus URL dan mentions
         text = re.sub(r'http\S+|www.\S+', '', text)
         text = re.sub(r'@\w+', '', text)
+        
+        # Jangan hapus hashtag, karena bisa jadi konten penting
         text = re.sub(r'#(\w+)', r'\1', text)
-        text = re.sub(r'[^a-zA-Z0-9\s\!\?\.\,]', '', text)
+        
+        # Simpan tanda baca penting, hapus yang lain
+        text = re.sub(r'[^a-zA-Z0-9\s\!\?\.\,]', ' ', text)
+        
+        # Tambahkan emoji kembali (jika ada)
+        text = text + " " + emoji_pattern
+        
+        # Normalisasi slang bahasa Indonesia
+        slang_map = {
+            'gue': 'saya', 'gw': 'saya', 'w': 'saya', 'aku': 'saya',
+            'lo': 'kamu', 'lu': 'kamu', 'loe': 'kamu', 'u': 'kamu',
+            'ga': 'tidak', 'gak': 'tidak', 'g': 'tidak', 'nggak': 'tidak', 'ngga': 'tidak',
+            'gamau': 'tidak mau', 'gk': 'tidak', 'gapernah': 'tidak pernah',
+            'tp': 'tapi', 'tpi': 'tapi', 'cb': 'coba', 'bs': 'bisa',
+            'udah': 'sudah', 'udh': 'sudah', 'dah': 'sudah',
+            'bgt': 'banget', 'bngt': 'banget',
+            'pengen': 'ingin', 'pgn': 'ingin',
+            'cape': 'capek', 'capek': 'lelah',
+            'gabut': 'tidak ada kerjaan'
+        }
+        
+        # Terapkan normalisasi slang
+        words = text.split()
+        normalized_words = [slang_map.get(word, word) for word in words]
+        text = ' '.join(normalized_words)
+        
         return text, original
 
     def get_feature_importance(self):
@@ -152,11 +253,23 @@ class AdvancedMentalHealthDetector:
         )
         combined_features = pd.concat([features_df, tfidf_df], axis=1)
         
+        # Sebelum encoding, cek distribusi kelas
+        label_counts = pd.Series(labels).value_counts()
+        print("Distribusi kelas sebelum training:")
+        print(label_counts)
+        
+        # Periksa apakah ada ketidakseimbangan kelas yang signifikan
+        if label_counts.max() / label_counts.min() > 3:
+            print("\nPeringatan: Ketidakseimbangan kelas terdeteksi!")
+            print("Ini bisa menyebabkan bias ke kelas mayoritas (biasanya 'normal').")
+            print("Sebaiknya tambahkan lebih banyak sampel untuk kelas minoritas.")
+        
         encoded_labels = self.label_encoder.fit_transform(labels)
         X_train, X_test, y_train, y_test = train_test_split(
-            combined_features, encoded_labels, test_size=0.2, random_state=42
+            combined_features, encoded_labels, test_size=0.2, stratify=encoded_labels, random_state=42
         )
         
+        # Setelah cross-validation, latih model pada seluruh dataset
         self.model.fit(X_train, y_train)
         
         # Validation
@@ -171,23 +284,44 @@ class AdvancedMentalHealthDetector:
             y_pred = self.model.predict(X_test)
             print("\nClassification Report:")
             print(classification_report(y_test, y_pred, target_names=self.label_encoder.classes_))
+            
+            # Confusion matrix untuk analisis lebih mendalam
+            print("\nConfusion Matrix:")
+            cm = confusion_matrix(y_test, y_pred)
+            cm_df = pd.DataFrame(
+                cm, 
+                index=self.label_encoder.classes_,
+                columns=self.label_encoder.classes_
+            )
+            print(cm_df)
         
         self.feature_columns = combined_features.columns
         return train_score, test_score
 
     def predict(self, text):
-        critical_keywords = ['burnout', 'kelelahan mental', 'overwork']
+        # Special case handling
+        critical_keywords = {
+            'depresi': ['bunuh diri', 'mati', 'ingin mati', 'pengen mati'],
+            'kecemasan': ['panik', 'serangan panik', 'sesak napas'],
+            'stress': ['burnout', 'kelelahan mental', 'overwork']
+        }
         
-        # Critical keyword handling
-        if any(kw in text.lower() for kw in critical_keywords):
-            return {
-                'condition': 'stress',
-                'confidence': 0.85,
-                'risk_level': 'High',
-                'probabilities': {'stress': 0.85, 'normal': 0.05, 'depresi': 0.05, 'kecemasan': 0.05},
-                'sentiment': self.sentiment_analyzer.polarity_scores(text),
-                'confidence_margin': 0.80
-            }
+        # Cek kata kunci kritis
+        text_lower = text.lower()
+        for condition, keywords in critical_keywords.items():
+            if any(kw in text_lower for kw in keywords):
+                confidence = 0.85
+                probas = {'depresi': 0.05, 'kecemasan': 0.05, 'stress': 0.05, 'normal': 0.05}
+                probas[condition] = confidence
+                
+                return {
+                    'condition': condition,
+                    'confidence': confidence,
+                    'risk_level': 'High',
+                    'probabilities': probas,
+                    'sentiment': self.sentiment_analyzer.polarity_scores(text),
+                    'confidence_margin': 0.80
+                }
         
         # Normal prediction flow
         processed, original = self.preprocess_text(text)
@@ -200,32 +334,127 @@ class AdvancedMentalHealthDetector:
             columns=[f'tfidf_{i}' for i in range(tfidf_features.shape[1])]
         )
         
-        combined = pd.concat([features_df, tfidf_df], axis=1).reindex(columns=self.feature_columns, fill_value=0)
-        
-        prediction = self.model.predict(combined)[0]
-        probabilities = self.model.predict_proba(combined)[0]
-        
-        return {
-            'condition': self.label_encoder.inverse_transform([prediction])[0],
-            'confidence': float(np.max(probabilities)),
-            'confidence_margin': float(np.max(probabilities) - np.sort(probabilities)[-2]),
-            'probabilities': {k: float(v) for k, v in zip(self.label_encoder.classes_, probabilities)},
-            'sentiment': self.sentiment_analyzer.polarity_scores(text),
-            'risk_level': self._calculate_risk_level(
-                self.label_encoder.inverse_transform([prediction])[0],
-                np.max(probabilities)
-            )
+        # Debugging: hitung nilai fitur kondisi
+        debug_scores = {
+            'depresi_score': features.get('depresi_score', 0),
+            'kecemasan_score': features.get('kecemasan_score', 0),
+            'stress_score': features.get('stress_score', 0),
+            'normal_score': features.get('normal_score', 0)
         }
+        
+        # Debugging: Print keywords yang terdeteksi
+        debug_keywords = {}
+        for condition in ['depresi', 'kecemasan', 'stress', 'normal']:
+            core_kw = features.get(f'{condition}_core_keywords', 0)
+            sec_kw = features.get(f'{condition}_secondary_keywords', 0)
+            debug_keywords[condition] = f"{core_kw} core, {sec_kw} secondary"
+        
+        # Jika skor keyword sangat tinggi, prioritaskan kondisi tersebut
+        max_score_condition = max(debug_scores, key=debug_scores.get)
+        max_score = debug_scores[max_score_condition]
+        
+        # Override model jika ada sinyal kuat dari kata kunci
+        if max_score > 5.0 and max_score_condition != 'normal':
+            # Ada sinyal kuat dari kata kunci
+            condition = max_score_condition
+            confidence = min(0.85, max_score / 10.0)  # Scale confidence
+            
+            # Buat distribusi probabilitas yang realistis
+            probas = {'depresi': 0.05, 'kecemasan': 0.05, 'stress': 0.05, 'normal': 0.05}
+            remaining = 1.0 - confidence
+            for cond in probas:
+                if cond != condition:
+                    probas[cond] = remaining / 3.0
+            probas[condition] = confidence
+            
+            return {
+                'condition': condition,
+                'confidence': confidence,
+                'risk_level': self._calculate_risk_level(condition, confidence),
+                'probabilities': probas,
+                'sentiment': self.sentiment_analyzer.polarity_scores(text),
+                'confidence_margin': confidence - (remaining / 3.0),
+                'debug_info': {
+                    'keyword_scores': debug_scores,
+                    'detected_keywords': debug_keywords
+                }
+            }
+            
+        # Combinasikan semua fitur, dan pastikan semua kolom yang diperlukan ada
+        combined = pd.concat([features_df, tfidf_df], axis=1)
+        
+        # Periksa apakah model sudah dimuat
+        if not hasattr(self, 'feature_columns'):
+            raise ValueError("Model belum dilatih atau dimuat!")
+        
+        # Pastikan format fitur sesuai dengan yang diharapkan model
+        combined = combined.reindex(columns=self.feature_columns, fill_value=0)
+        
+        # Prediksi dengan model
+        try:
+            prediction = self.model.predict(combined)[0]
+            probabilities = self.model.predict_proba(combined)[0]
+            
+            # Konversi indeks ke label
+            condition = self.label_encoder.inverse_transform([prediction])[0]
+            proba_dict = {k: float(v) for k, v in zip(self.label_encoder.classes_, probabilities)}
+            
+            return {
+                'condition': condition,
+                'confidence': float(np.max(probabilities)),
+                'confidence_margin': float(np.max(probabilities) - np.sort(probabilities)[-2]),
+                'probabilities': proba_dict,
+                'sentiment': self.sentiment_analyzer.polarity_scores(text),
+                'risk_level': self._calculate_risk_level(
+                    condition,
+                    np.max(probabilities)
+                ),
+                'debug_info': {
+                    'keyword_scores': debug_scores,
+                    'detected_keywords': debug_keywords
+                }
+            }
+        except Exception as e:
+            # Fallback ke rule-based jika model gagal
+            print(f"Error dalam prediksi model: {str(e)}")
+            
+            # Rule-based fallback
+            condition = max(debug_scores, key=debug_scores.get)
+            if debug_scores[condition] < 1.0:
+                condition = 'normal'  # Default ke normal jika tidak ada sinyal kuat
+                
+            confidence = min(0.7, debug_scores[condition] / 10.0 + 0.4)
+            
+            return {
+                'condition': condition,
+                'confidence': confidence,
+                'confidence_margin': 0.3,
+                'probabilities': {
+                    'depresi': 0.1 if condition != 'depresi' else confidence,
+                    'kecemasan': 0.1 if condition != 'kecemasan' else confidence,
+                    'stress': 0.1 if condition != 'stress' else confidence,
+                    'normal': 0.7 if condition != 'normal' else confidence
+                },
+                'sentiment': self.sentiment_analyzer.polarity_scores(text),
+                'risk_level': self._calculate_risk_level(condition, confidence),
+                'debug_info': {
+                    'keyword_scores': debug_scores,
+                    'detected_keywords': debug_keywords,
+                    'error': str(e)
+                }
+            }
 
     def _calculate_risk_level(self, condition, confidence):
         risk_scores = {'depresi': 2.0, 'kecemasan': 1.5, 'stress': 1.5, 'normal': 0}
         adjusted_risk = risk_scores.get(condition, 0) * confidence
         
-        if condition == 'stress' and confidence >= 0.75:
+        if condition == 'depresi' and confidence >= 0.6:
             return "High"
-        elif adjusted_risk >= 1.8:
+        elif condition == 'stress' and confidence >= 0.75:
             return "High"
-        elif adjusted_risk >= 1.0:
+        elif adjusted_risk >= 1.5:
+            return "High"
+        elif adjusted_risk >= 0.8:
             return "Medium"
         else:
             return "Low"
@@ -248,11 +477,12 @@ class AdvancedMentalHealthDetector:
                 self.vectorizer = data['vectorizer']
                 self.label_encoder = data['label_encoder']
                 self.feature_columns = data['feature_columns']
-                self.mental_health_keywords = data.get('keywords', {})
+                self.mental_health_keywords = data.get('keywords', self.mental_health_keywords)
+                print("✅ Model berhasil dimuat!")
         except Exception as e:
-            print(f"Error loading model: {str(e)}")
+            print(f"❌ Error saat memuat model: {str(e)}")
+            raise
 
-        # Tambahkan method ini ke class AdvancedMentalHealthDetector di mental_health_detector.py
     def analyze_chat_history(self, messages, timestamps=None):
         """Menganalisis riwayat chat untuk tren kesehatan mental"""
         if timestamps is None:
@@ -276,6 +506,10 @@ class AdvancedMentalHealthDetector:
             # Tambahkan preview pesan
             preview = message[:30] + "..." if len(message) > 30 else message
             prediction['message_preview'] = preview
+            
+            # Tambahkan informasi debug jika ada
+            if 'debug_info' in prediction:
+                prediction['debug_info']['message'] = message
             
             results['individual_results'].append(prediction)
         

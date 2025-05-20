@@ -244,6 +244,10 @@ def main():
     
     print("\n✅ Pelatihan selesai! Model siap digunakan.")
 
+    train_score, test_score = detector.train(texts, labels, validate=True)
+    print(f"Training Accuracy: {train_score:.2%}")
+    print(f"Testing Accuracy: {test_score:.2%}")
+
 if __name__ == "__main__":
     # Cek dan buat folder model jika belum ada
     if not os.path.exists('models'):
