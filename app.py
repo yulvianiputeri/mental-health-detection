@@ -281,6 +281,7 @@ def main():
                             st.metric("Margin Confidence", f"{result['confidence_margin']:.2%}")
                         with met_col3:
                             st.metric("Jumlah Kata", len(user_input.split()))
+
                         
                         # Distribusi probabilitas
                         st.subheader("🎯 Probabilitas Kondisi")
