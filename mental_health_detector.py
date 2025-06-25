@@ -15,7 +15,6 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-# Download NLTK data
 try:
     nltk.data.find('tokenizers/punkt')
     nltk.data.find('vader_lexicon')
@@ -28,7 +27,7 @@ class AdvancedMentalHealthDetector:
         self.vectorizer = TfidfVectorizer(
             max_features=3000,
             ngram_range=(1, 3),
-            stop_words=None  # Jangan gunakan stop words untuk bahasa Indonesia
+            stop_words=None  
         )
         self.model = GradientBoostingClassifier(
             n_estimators=200,
@@ -39,7 +38,6 @@ class AdvancedMentalHealthDetector:
         self.label_encoder = LabelEncoder()
         self.sentiment_analyzer = SentimentIntensityAnalyzer()
         
-        # Keyword configuration yang ditingkatkan untuk bahasa Indonesia
         self.mental_health_keywords = {
             'depresi': {
                 'core': [
@@ -53,7 +51,7 @@ class AdvancedMentalHealthDetector:
                     'kesepian', 'tidak berharga', 'lelah hidup', 'menyesal', 'malas', 'males', 
                     'apatis', 'nangis', 'menangis', 'sendiri', 'sendirian', 'gelap'
                 ],
-                'weight': 2.0  # Ditingkatkan
+                'weight': 2.0  
             },
             'kecemasan': {
                 'core': [
@@ -80,7 +78,7 @@ class AdvancedMentalHealthDetector:
                     'kewalahan', 'tekanan', 'tagihan', 'berantakan', 'sibuk', 'deadline',
                     'terburu-buru', 'batas waktu', 'tenggat', 'waktu mepet', 'dikejar'
                 ],
-                'weight': 1.8  # Ditingkatkan
+                'weight': 1.8  
             },
             'normal': {
                 'core': [
@@ -92,7 +90,7 @@ class AdvancedMentalHealthDetector:
                     'baik', 'oke', 'lega', 'fun', 'santai', 'relax', 'enak', 'nyaman',
                     'menyenangkan', 'enjoy', 'fine', 'ok', 'okay'
                 ],
-                'weight': 0.8  # Diturunkan agar tidak bias ke normal
+                'weight': 0.8  
             }
         }
         
@@ -116,6 +114,7 @@ class AdvancedMentalHealthDetector:
         
         # Sentiment analysis - catatan: VADER tidak optimal untuk bahasa Indonesia
         sentiment = self.sentiment_analyzer.polarity_scores(text)
+        print(f"Sentimen untuk '{text}': {sentiment}")  # Menampilkan hasil sentimen untuk teks
         features.update({
             'sentiment_positive': sentiment['pos'],
             'sentiment_negative': sentiment['neg'],
@@ -132,7 +131,6 @@ class AdvancedMentalHealthDetector:
         
         # Keyword scoring dengan pengecekan pattern yang ditingkatkan
         for condition, keywords in self.mental_health_keywords.items():
-            # Cek keberadaan kata kunci di dalam teks
             core_matches = []
             for word in keywords['core']:
                 if word in text_lower or re.search(r'\b' + re.escape(word) + r'\b', text_lower):
@@ -299,6 +297,10 @@ class AdvancedMentalHealthDetector:
         return train_score, test_score
 
     def predict(self, text):
+        # Analisis sentimen
+        sentiment = self.sentiment_analyzer.polarity_scores(text)
+        print(f"Sentimen untuk '{text}': {sentiment}")  # Debugging: Menampilkan hasil sentimen
+        
         # Special case handling
         critical_keywords = {
             'depresi': ['bunuh diri', 'mati', 'ingin mati', 'pengen mati'],
@@ -319,7 +321,7 @@ class AdvancedMentalHealthDetector:
                     'confidence': confidence,
                     'risk_level': 'High',
                     'probabilities': probas,
-                    'sentiment': self.sentiment_analyzer.polarity_scores(text),
+                    'sentiment': sentiment,  # Mengembalikan nilai sentimen
                     'confidence_margin': 0.80
                 }
         

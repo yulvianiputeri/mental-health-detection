@@ -92,7 +92,7 @@ def get_enhanced_recommendations(condition, risk_level):
         'depresi': {
             'tinggi': [
                 '🚨 **DARURAT**: Segera hubungi profesional kesehatan mental',
-                '📞 Hotline Krisis: 119 ext 8 (Sejiwa)',
+                '📞 Hotline Kesehatan Jiwa Kemenkes: 021-500-454',
                 '🏥 Kunjungi UGD terdekat jika ada pikiran menyakiti diri',
                 '👥 Jangan sendirian - hubungi teman/keluarga terpercaya',
                 '💊 Pertimbangkan konsultasi obat dengan psikiater'
@@ -384,15 +384,14 @@ def main():
                     st.subheader("🆘 Sumber Daya Darurat")
                     st.error("""
                     **Hotline Krisis:**
-                    - 119 ext 8 (Sejiwa) - Hotline Bunuh Diri & Krisis
+                    - Hotline Kesehatan Jiwa Kemenkes (021-500-454)
                     - 500-454 (Halodoc) - Konsultasi Psikolog
                     - Darurat: 112/119
                     """)
                     
                     with st.expander("Cari Sumber Daya Lokal"):
-                        st.write("🏥 [Direktori Psikolog & Psikiater](https://www.halodoc.com/psikolog)")
-                        st.write("👥 [Grup Support](https://pijarpsikologi.org/)")
-                        st.write("📱 [Aplikasi Kesehatan Mental](https://www.riliv.co/)")
+                        st.write("🏥 [Direktori Psikolog & Psikiater](https://www.halodoc.com/tanya-dokter/kategori/psikolog-klinis)")
+                        st.write("📱 [Aplikasi Kesehatan Mental](https://riliv.co/)")
             else:
                 st.info("👈 Masukkan teks dan klik analisis untuk mendapat rekomendasi yang dipersonalisasi")
                 

@@ -7,15 +7,8 @@ import random
 import numpy as np
 import os
 
-# =============================================
-# DATA PELATIHAN YANG DITINGKATKAN (BAHASA INDONESIA)
-# =============================================
-
-# train_model.py (Perbaikan Syntax Error)
-
 training_data = {
     'depresi': [
-        # Kalimat panjang
         "Saya merasa tidak ada harapan lagi dalam hidup ini",
         "Setiap hari rasanya seperti beban yang tak tertahankan",
         "Tidur seharian pun masih merasa lelah luar biasa",
@@ -36,7 +29,6 @@ training_data = {
         "Gue cuma beban buat orang lain",
         "Udh 3 hari gue cuma tidur doang, males bgt",
 
-        # Kalimat pendek
         "Hidup ini hampa",
         "Aku lelah",
         "Gak ada artinya",
@@ -52,7 +44,6 @@ training_data = {
     ],
     
     'kecemasan': [
-        # Kalimat panjang
         "Jantungku berdebar kencang setiap kali memikirkan presentasi besok",
         "Aku terus membayangkan skenario terburuk yang mungkin terjadi",
         "Tangan berkeringat dingin dan napas sesak saat berada di keramaian",
@@ -71,7 +62,6 @@ training_data = {
         "Kayak ada yang mau celaka gitu rasanya",
         "Gue sering banget ngerinding tiba-tiba",
 
-        # Kalimat pendek
         "Deg-degan terus",
         "Gelisah banget",
         "Aku takut",
@@ -86,7 +76,6 @@ training_data = {
     ],
     
     'stress': [
-        # Kalimat panjang
         "Beban kerja yang menumpak membuatku tidak bisa tidur semalaman",
         "Deadline bertabrakan dan atasan terus menambah tekanan",
         "Masalah keuangan dan keluarga membuat kepalaku mau pecah",
@@ -104,7 +93,6 @@ training_data = {
         "Gue bingung mau mulai dari mana",
         "Rasanya semua hal jadi berantakan",
 
-        # Kalimat pendek
         "Burnout",
         "Beban berat",
         "Kewalahan",
@@ -120,7 +108,6 @@ training_data = {
     ],
     
     'normal': [
-        # Kalimat panjang
         "Hari ini aku merasa bersyukur dengan semua nikmat yang diberikan Tuhan",
         "Quality time dengan keluarga membuat hatiku tenang dan bahagia",
         "Menyelesaikan pekerjaan tepat waktu memberiku kepuasan tersendiri",
@@ -138,7 +125,6 @@ training_data = {
         "Baru dapet nilai bagus, syukur deh",
         "Nongkrong di kafe sambil dengerin musik",
 
-        # Kalimat pendek dan netral
         "Halo",
         "Tes",
         "Apa kabar?",
@@ -164,10 +150,6 @@ training_data = {
     ]
 }
 
-# =============================================
-# PERSIAPAN DATA PELATIHAN
-# =============================================
-
 def prepare_training_data():
     """Mengkonversi data pelatihan ke format yang sesuai"""
     all_texts = []
@@ -185,16 +167,11 @@ def generate_synthetic_timestamps(num_entries):
     timestamps = []
     
     for i in range(num_entries):
-        # Tambahkan variasi waktu acak dalam 30 hari terakhir
-        time_offset = random.randint(0, 30*24*60*60)  # Acak dalam 30 hari dalam detik
+        time_offset = random.randint(0, 30*24*60*60)  
         new_time = base_time + timedelta(seconds=time_offset)
         timestamps.append(new_time)
     
     return timestamps
-
-# =============================================
-# PROSES PELATIHAN UTAMA
-# =============================================
 
 def main():
     print("🔄 Memulai proses pelatihan model...")
@@ -249,7 +226,6 @@ def main():
     print(f"Testing Accuracy: {test_score:.2%}")
 
 if __name__ == "__main__":
-    # Cek dan buat folder model jika belum ada
     if not os.path.exists('models'):
         os.makedirs('models')
     
